@@ -2,6 +2,19 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
+        <panth_seo>
+            <general>
+                <!--
+                  Master switch shared with Panth_AdvancedSEO when that module is
+                  also installed. We default to enabled so this module can be
+                  installed standalone (without AdvancedSEO) and emit JSON-LD
+                  out of the box. If AdvancedSEO is later installed its admin
+                  toggle governs the same path and overrides the default.
+                -->
+                <enabled>1</enabled>
+                <debug>0</debug>
+            </general>
+        </panth_seo>
         <panth_structured_data>
             <structured_data>
                 <product>1</product>

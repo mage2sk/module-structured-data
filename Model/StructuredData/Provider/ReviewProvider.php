@@ -101,13 +101,14 @@ class ReviewProvider extends AbstractProvider
                 continue;
             }
             $ratingValue = $this->resolveReviewRating($review);
+            $datePublished = $this->formatIso8601((string) ($review->getCreatedAt() ?? ''));
             $node = [
                 '@type' => 'Review',
                 'author' => [
                     '@type' => 'Person',
                     'name' => $nickname !== '' ? $nickname : 'Customer',
                 ],
-                'datePublished' => (string) $review->getCreatedAt(),
+                'datePublished' => $datePublished !== '' ? $datePublished : (string) $review->getCreatedAt(),
                 'reviewBody' => $detail !== '' ? $detail : $title,
                 'name' => $title !== '' ? $title : mb_substr($detail, 0, 80),
                 'itemReviewed' => ['@id' => (string) $product->getProductUrl() . '#product'],
@@ -121,6 +122,26 @@ class ReviewProvider extends AbstractProvider
             $out[] = $node;
         }
         return $out;
+    }
+
+    /**
+     * Format a MySQL datetime as ISO 8601, empty string on parse failure.
+     *
+     * Schema.org's `datePublished` requires ISO 8601 so social scrapers and
+     * Google's Rich Results test can parse it. Magento stores review
+     * created_at as `YYYY-MM-DD HH:MM:SS` (no timezone separator, space
+     * instead of `T`), which fails validation when emitted verbatim.
+     */
+    private function formatIso8601(string $datetime): string
+    {
+        if ($datetime === '') {
+            return '';
+        }
+        try {
+            return (new \DateTimeImmutable($datetime))->format(\DateTimeInterface::ATOM);
+        } catch (\Throwable) {
+            return '';
+        }
     }
 
     /**

@@ -51,7 +51,14 @@ class SellerProvider extends AbstractProvider
 
     public function isApplicable(): bool
     {
-        return $this->getCurrentProduct() !== null;
+        if ($this->getCurrentProduct() === null) {
+            return false;
+        }
+        // Seller and Organization share @id=#organization (the Aggregator merges
+        // them into one node). When the admin disables the Organization
+        // provider they expect no Organization-shaped node at all — the Seller
+        // provider must defer to that toggle instead of silently restoring it.
+        return $this->config->isStructuredDataEnabled('organization');
     }
 
     public function getJsonLd(): array
@@ -67,9 +74,16 @@ class SellerProvider extends AbstractProvider
         $businessType = $this->getBusinessType($storeId);
         $name = $this->getStoreName($storeId);
 
+        // Share the Organization @id so the Aggregator deep-merges both
+        // contributions into a single graph node. When business_type is a
+        // specialised subclass (LocalBusiness / Store / OnlineStore) the
+        // scalar @type here overrides the Organization provider's 'Organization'
+        // because array_merge prefers the later provider — which is what we
+        // want: a PDP's Offer.seller still refs #organization and now resolves
+        // to the richer type. Keeps Offer.seller refs stable.
         $node = [
             '@type' => $businessType,
-            '@id'   => $baseUrl . '#seller',
+            '@id'   => $baseUrl . '#organization',
             'name'  => $name,
             'url'   => $baseUrl,
         ];
