@@ -53,6 +53,15 @@
                 <return_policy_type>refund</return_policy_type>
                 <return_policy_fees>free</return_policy_fees>
                 <limited_stock_threshold>5</limited_stock_threshold>
+                <!--
+                  Auto-emit multi-region shippingDetails when the merchant has
+                  NOT configured `delivery_methods` but Magento's shipping
+                  table/flat-rate config carries per-region entries. Pure
+                  detector: MultiRegionShippingProvider::isApplicable() returns
+                  false when delivery_methods is set (that path is owned by
+                  DeliveryMethodProvider) and when no shipping entries exist.
+                -->
+                <multiRegionShipping>1</multiRegionShipping>
             </structured_data>
             <social_profiles>
                 <facebook_url></facebook_url>

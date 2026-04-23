@@ -199,11 +199,13 @@ class ProductGroupProvider extends AbstractProvider
         $childUrl = (string) $child->getProductUrl();
 
         $variant = [
-            '@type'      => 'Product',
-            'sku'        => (string) $child->getSku(),
-            'name'       => (string) $child->getName(),
-            'url'        => $childUrl !== '' ? $childUrl : null,
+            '@type' => 'Product',
+            'sku'   => (string) $child->getSku(),
+            'name'  => (string) $child->getName(),
         ];
+        if ($childUrl !== '') {
+            $variant['url'] = $childUrl;
+        }
 
         $image = $this->getProductImage($child);
         if ($image !== '') {
@@ -312,7 +314,7 @@ class ProductGroupProvider extends AbstractProvider
             $baseUrl = rtrim($this->storeManager->getStore()->getBaseUrl(
                 \Magento\Framework\UrlInterface::URL_TYPE_MEDIA
             ), '/');
-            return $baseUrl . '/catalog/product' . $image;
+            return $baseUrl . '/catalog/product/' . ltrim($image, '/');
         } catch (\Throwable) {
             return '';
         }

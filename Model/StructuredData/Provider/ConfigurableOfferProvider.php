@@ -156,14 +156,17 @@ class ConfigurableOfferProvider extends AbstractProvider
         $availability = $this->getAvailability($child);
         $url = (string) $child->getProductUrl();
 
-        return [
+        $offer = [
             '@type'         => 'Offer',
             'price'         => number_format($finalPrice, 2, '.', ''),
             'priceCurrency' => $currency,
             'availability'  => $availability,
             'sku'           => (string) $child->getSku(),
-            'url'           => $url !== '' ? $url : null,
         ];
+        if ($url !== '') {
+            $offer['url'] = $url;
+        }
+        return $offer;
     }
 
     private function getAvailability(ProductInterface $product): string

@@ -97,7 +97,10 @@ class ProductProvider extends AbstractProvider
         }
 
         $brandAttr = $this->config->getBrandAttribute() ?: 'manufacturer';
-        $brandName = (string) ($product->getAttributeText($brandAttr) ?: $product->getData('brand') ?: '');
+        $brandName = $this->coerceAttributeText($product->getAttributeText($brandAttr));
+        if ($brandName === '') {
+            $brandName = trim((string) ($product->getData('brand') ?? ''));
+        }
         if ($brandName !== '') {
             $node['brand'] = [
                 '@type' => 'Brand',
@@ -105,7 +108,10 @@ class ProductProvider extends AbstractProvider
             ];
         }
 
-        $audience = (string) ($product->getAttributeText('gender') ?: $product->getData('target_audience') ?: '');
+        $audience = $this->coerceAttributeText($product->getAttributeText('gender'));
+        if ($audience === '') {
+            $audience = trim((string) ($product->getData('target_audience') ?? ''));
+        }
         if ($audience !== '') {
             $node['audience'] = [
                 '@type' => 'PeopleAudience',
@@ -134,6 +140,35 @@ class ProductProvider extends AbstractProvider
         }
 
         return $node;
+    }
+
+    /**
+     * Normalise a value from `Product::getAttributeText()`.
+     *
+     * That method can return a string (single-select / text), an array of
+     * strings (multi-select), `false` (no attribute), or `null` (unset).
+     * Casting an array straight to string triggers Magento's ErrorHandler
+     * which converts the PHP warning into an Exception — the Aggregator
+     * then catches it and silently drops the ENTIRE Product node. So we
+     * normalise here before consumption: arrays join with `, `, scalars
+     * trim to string, non-stringables become empty.
+     */
+    private function coerceAttributeText(mixed $value): string
+    {
+        if (is_string($value)) {
+            return trim($value);
+        }
+        if (is_array($value)) {
+            $parts = array_map(
+                static fn ($v): string => is_scalar($v) ? trim((string) $v) : '',
+                $value
+            );
+            return trim(implode(', ', array_filter($parts, static fn ($v): bool => $v !== '')));
+        }
+        if (is_scalar($value)) {
+            return trim((string) $value);
+        }
+        return '';
     }
 
     /**
@@ -187,6 +222,20 @@ class ProductProvider extends AbstractProvider
      */
     private function buildOffer(ProductInterface $product, string $currency, string $url): array
     {
+        // Multi-variant types (configurable / bundle / grouped) always have
+        // their offer promoted to AggregateOffer by the specialised provider
+        // that runs later in the graph. Emitting a scalar `price` here would
+        // leave it in the merged AggregateOffer alongside `lowPrice` /
+        // `highPrice`, which the Aggregator's deep-merge preserves — and
+        // Google's Rich Results validator flags the mixed shape. Skip the
+        // price/currency/availability/url fields for those types; the shared
+        // offer-level extras (itemCondition, seller, priceValidUntil,
+        // shippingDetails, hasMerchantReturnPolicy) still get merged in so a
+        // bundle or grouped product still carries its return policy and the
+        // configured condition on the AggregateOffer node.
+        $typeId = (string) $product->getTypeId();
+        $isVariantType = in_array($typeId, ['configurable', 'bundle', 'grouped'], true);
+
         $finalPrice = $product->getFinalPrice();
         if ($finalPrice === null || $finalPrice === false) {
             // Complex product: price may live on price info.
@@ -197,21 +246,23 @@ class ProductProvider extends AbstractProvider
             }
         }
         $finalPrice = (float) $finalPrice;
-        if ($finalPrice <= 0.0) {
+
+        // Simple products require a positive price to emit an Offer; variant
+        // types don't (their price lives on lowPrice/highPrice from the
+        // specialised provider).
+        if (!$isVariantType && $finalPrice <= 0.0) {
             return [];
         }
 
-        $availability = $this->resolveAvailability($product);
-
-        $offer = [
-            '@type' => 'Offer',
-            'url'   => $url,
-            'price' => number_format($finalPrice, 2, '.', ''),
-            'priceCurrency' => $currency,
-            'availability'  => $availability,
-            'itemCondition' => $this->config->getProductConditionSchemaUrl(),
-            'seller' => ['@id' => rtrim($this->getBaseUrl(), '/') . '/#organization'],
-        ];
+        $offer = ['@type' => 'Offer'];
+        if (!$isVariantType) {
+            $offer['url']           = $url;
+            $offer['price']         = number_format($finalPrice, 2, '.', '');
+            $offer['priceCurrency'] = $currency;
+            $offer['availability']  = $this->resolveAvailability($product);
+        }
+        $offer['itemCondition'] = $this->config->getProductConditionSchemaUrl();
+        $offer['seller']        = ['@id' => rtrim($this->getBaseUrl(), '/') . '/#organization'];
 
         $priceValidUntil = $this->resolvePriceValidUntil($product);
         if ($priceValidUntil !== '') {

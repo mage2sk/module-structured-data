@@ -49,7 +49,8 @@ class VideoProvider extends AbstractProvider
             }
             $title = (string) ($video->getVideoTitle() ?: $entry->getLabel() ?: $product->getName());
             $description = (string) ($video->getVideoDescription() ?: $title);
-            $thumbnail = (string) ($entry->getFile() ? $this->getBaseUrl() . 'media/catalog/product' . $entry->getFile() : '');
+            $file = (string) $entry->getFile();
+            $thumbnail = $file !== '' ? $this->getBaseUrl() . 'media/catalog/product/' . ltrim($file, '/') : '';
 
             $node = [
                 '@type' => 'VideoObject',

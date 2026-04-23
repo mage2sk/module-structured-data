@@ -78,7 +78,6 @@ class ReturnPolicyProvider extends AbstractProvider
 
         $returnType = $this->getReturnType($storeId);
         if ($returnType !== '') {
-            $node['returnPolicySeasonalOverride'] = [];
             // Schema.org doesn't have a direct "refund vs exchange" field,
             // but we include it as an additional property for richer data.
             $node['additionalProperty'] = [
@@ -117,6 +116,14 @@ class ReturnPolicyProvider extends AbstractProvider
         return $value;
     }
 
+    /**
+     * Schema.org's `returnFees` only accepts values from the `ReturnFeesEnumeration`
+     * (FreeReturn / ReturnFeesCustomerResponsibility / ReturnShippingFees /
+     * RestockingFees). Any other string — including a plain "5.99" or the
+     * merchant's free-text "Paid by customer" — will fail Google's Rich Results
+     * validator. We only recognise the safe `free` alias and fall back to
+     * `ReturnFeesCustomerResponsibility` for anything else.
+     */
     private function getReturnFees(?int $storeId): string
     {
         $value = (string) ($this->scopeConfig->getValue(
@@ -125,11 +132,25 @@ class ReturnPolicyProvider extends AbstractProvider
             $storeId
         ) ?? '');
 
-        if ($value === '' || strtolower($value) === 'free') {
+        $lower = strtolower(trim($value));
+        if ($lower === '' || $lower === 'free' || $lower === 'freereturn') {
             return 'https://schema.org/FreeReturn';
         }
 
-        return $value;
+        $enum = [
+            'returnfeescustomerresponsibility' => 'https://schema.org/ReturnFeesCustomerResponsibility',
+            'returnshippingfees'               => 'https://schema.org/ReturnShippingFees',
+            'restockingfees'                   => 'https://schema.org/RestockingFees',
+        ];
+        if (isset($enum[$lower])) {
+            return $enum[$lower];
+        }
+
+        // Non-standard admin-entered string (e.g. "$5.99 restocking fee") maps
+        // to the catch-all customer-responsibility enum so the payload still
+        // validates. The human-readable description belongs in returnPolicyBody
+        // if the merchant wants it — not as the enum value itself.
+        return 'https://schema.org/ReturnFeesCustomerResponsibility';
     }
 
     private function getStoreCountry(?int $storeId): string

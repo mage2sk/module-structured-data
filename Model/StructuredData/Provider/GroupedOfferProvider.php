@@ -150,15 +150,18 @@ class GroupedOfferProvider extends AbstractProvider
 
         $url = (string) $child->getProductUrl();
 
-        return [
+        $offer = [
             '@type'         => 'Offer',
             'price'         => number_format($finalPrice, 2, '.', ''),
             'priceCurrency' => $currency,
             'availability'  => $this->getAvailability($child),
             'sku'           => (string) $child->getSku(),
             'name'          => (string) $child->getName(),
-            'url'           => $url !== '' ? $url : null,
         ];
+        if ($url !== '') {
+            $offer['url'] = $url;
+        }
+        return $offer;
     }
 
     private function getAvailability(ProductInterface $product): string

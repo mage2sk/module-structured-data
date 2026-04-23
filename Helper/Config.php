@@ -74,17 +74,16 @@ class Config
     public function isStructuredDataEnabled(string $code, ?int $storeId = null): bool
     {
         static $codeToConfigKey = [
-            'return_policy'       => 'return_policy_days',
-            'configurable_offer'  => 'configurable_multi_offer',
-            'productList'         => 'enable_product_list_schema',
-            'product_group'       => 'product_group_enabled',
-            'pros_cons'           => 'pros_cons_enabled',
-            'bundle_offer'        => 'product',
-            'grouped_offer'       => 'product',
-            'deliveryMethod'      => 'delivery_methods',
-            'paymentMethod'       => 'accepted_payment_methods',
-            'custom_properties'   => 'custom_properties',
-            'multiRegionShipping' => 'delivery_methods',
+            'return_policy'      => 'return_policy_days',
+            'configurable_offer' => 'configurable_multi_offer',
+            'productList'        => 'enable_product_list_schema',
+            'product_group'      => 'product_group_enabled',
+            'pros_cons'          => 'pros_cons_enabled',
+            'bundle_offer'       => 'product',
+            'grouped_offer'      => 'product',
+            'deliveryMethod'     => 'delivery_methods',
+            'paymentMethod'      => 'accepted_payment_methods',
+            'custom_properties'  => 'custom_properties',
         ];
 
         $configKey = $codeToConfigKey[$code] ?? $code;
@@ -92,7 +91,7 @@ class Config
 
         if (in_array(
             $code,
-            ['return_policy', 'deliveryMethod', 'paymentMethod', 'custom_properties', 'multiRegionShipping'],
+            ['return_policy', 'deliveryMethod', 'paymentMethod', 'custom_properties'],
             true
         )) {
             $val = $this->value($path, $storeId);
