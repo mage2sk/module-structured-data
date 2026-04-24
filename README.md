@@ -18,6 +18,10 @@
 [![Upwork Top Rated Plus](https://img.shields.io/badge/Upwork-Top%20Rated%20Plus-14a800?logo=upwork&logoColor=white)](https://www.upwork.com/freelancers/~016dd1767321100e21)
 [![Website](https://img.shields.io/badge/Website-kishansavaliya.com-0D9488)](https://kishansavaliya.com)
 
+<p align="center">
+  <img src="docs/images/hero-banner.png" alt="Magento 2 Structured Data JSON-LD free extension for Google Rich Results, Hyva and Luma ready — built by Kishan Savaliya (Panth Infotech), Top Rated Plus on Upwork." width="100%" />
+</p>
+
 > **One JSON-LD block per page, product-type aware, theme-agnostic.** Panth Structured Data emits a single `<script type="application/ld+json">` with a deduplicated `@graph` covering every schema.org node Google cares about — Product, Offer / AggregateOffer, BreadcrumbList, Organization, WebSite + SearchAction, ItemList, Review + AggregateRating, FAQPage, Article, VideoObject, MerchantReturnPolicy — with automatic strip of Magento's native duplicate markup. Identical output on Hyva and Luma, zero theme overrides.
 
 **Panth Structured Data** is a production-grade schema.org JSON-LD module for Magento 2. A single head block feeds a pipeline of 24 content providers that each contribute one or more nodes to a shared `@graph` which an `Aggregator` deduplicates by `@id` and deep-merges so two providers contributing to the same entity always produce a single coherent node. A plugin on `AbstractBlock::afterToHtml` strips Magento's native `application/ld+json` scripts from `product.info.main`, `breadcrumbs` and `product.price.final` so you never ship two versions of the same schema. Every toggle, attribute code, and social URL lives under **Admin → Stores → Configuration → Panth Extensions → Structured Data** — nothing runs unless it's applicable on the current page.
