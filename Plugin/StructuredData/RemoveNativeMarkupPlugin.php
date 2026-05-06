@@ -39,11 +39,18 @@ class RemoveNativeMarkupPlugin
     }
 
     /**
+     * Magento's `AbstractBlock::toHtml()` is allowed to return null when a
+     * block decides it has nothing to render — third-party SEO extensions in
+     * particular sometimes return null on routes that don't match their
+     * scope. With `declare(strict_types=1)` a non-nullable `string` typehint
+     * here would TypeError on null and bring down the page, so accept
+     * ?string and short-circuit before any string ops.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function afterToHtml(AbstractBlock $subject, string $result): string
+    public function afterToHtml(AbstractBlock $subject, ?string $result): ?string
     {
-        if ($result === '') {
+        if ($result === null || $result === '') {
             return $result;
         }
 
