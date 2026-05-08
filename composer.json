@@ -1,13 +1,32 @@
 {
     "name": "mage2kishan/module-structured-data",
-    "description": "Panth Structured Data — JSON-LD schemas for Magento 2: Product, Breadcrumb, Organization, Website, Article, Review, Video, Brand, FAQ, SaleEvent, ReturnPolicy, Certification, Energy Label, Pros/Cons, and more.",
+    "description": "Panth Structured Data \u2014 JSON-LD schemas for Magento 2: Product, Breadcrumb, Organization, Website, Article, Review, Video, Brand, FAQ, SaleEvent, ReturnPolicy, Certification, Energy Label, Pros/Cons, and more.",
     "type": "magento2-module",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "license": "proprietary",
-    "keywords": ["magento2","magento2-module","seo","structured-data","json-ld","schema-org","rich-results","panth"],
+    "keywords": [
+        "magento2",
+        "magento2-module",
+        "seo",
+        "structured-data",
+        "json-ld",
+        "schema-org",
+        "rich-results",
+        "panth"
+    ],
     "homepage": "https://kishansavaliya.com",
-    "support": {"email":"kishansavaliyakb@gmail.com","source":"https://kishansavaliya.com"},
-    "authors": [{"name":"Kishan Savaliya","email":"kishansavaliyakb@gmail.com","homepage":"https://kishansavaliya.com","role":"Developer"}],
+    "support": {
+        "email": "kishansavaliyakb@gmail.com",
+        "source": "https://kishansavaliya.com"
+    },
+    "authors": [
+        {
+            "name": "Kishan Savaliya",
+            "email": "kishansavaliyakb@gmail.com",
+            "homepage": "https://kishansavaliya.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "php": "~8.1.0||~8.2.0||~8.3.0||~8.4.0",
         "mage2kishan/module-core": "^1.0",
@@ -19,7 +38,11 @@
         "magento/module-config": "^101.2"
     },
     "autoload": {
-        "files": ["registration.php"],
-        "psr-4": {"Panth\\StructuredData\\": ""}
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Panth\\StructuredData\\": ""
+        }
     }
 }
