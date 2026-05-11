@@ -53,4 +53,18 @@ abstract class AbstractProvider implements StructuredDataProviderInterface
             return '/';
         }
     }
+
+    /**
+     * Schema.org `email` requires a bare RFC 5322 address — no `mailto:` scheme.
+     * Google Rich Results test rejects URI-prefixed values, so strip the prefix
+     * defensively before emitting.
+     */
+    protected function normalizeEmail(string $email): string
+    {
+        $email = trim($email);
+        if (stripos($email, 'mailto:') === 0) {
+            $email = substr($email, 7);
+        }
+        return $email;
+    }
 }

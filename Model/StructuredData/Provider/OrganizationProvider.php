@@ -80,8 +80,9 @@ class OrganizationProvider extends AbstractProvider
             if ($phone !== '') {
                 $contact['telephone'] = $phone;
             }
-            if ($email !== '') {
-                $contact['email'] = $email;
+            $cleanEmail = $this->normalizeEmail($email);
+            if ($cleanEmail !== '') {
+                $contact['email'] = $cleanEmail;
             }
             $node['contactPoint'] = [$contact];
         }
