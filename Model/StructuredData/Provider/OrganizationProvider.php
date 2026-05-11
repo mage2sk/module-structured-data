@@ -27,6 +27,7 @@ class OrganizationProvider extends AbstractProvider
     public const XML_REGION     = 'panth_structured_data/organization/region';
     public const XML_POSTCODE   = 'panth_structured_data/organization/postcode';
     public const XML_COUNTRY    = 'panth_structured_data/organization/country';
+    public const XML_FOUNDER_ID = 'panth_structured_data/organization/founder_id';
 
     public function __construct(
         Registry $registry,
@@ -83,6 +84,15 @@ class OrganizationProvider extends AbstractProvider
                 $contact['email'] = $email;
             }
             $node['contactPoint'] = [$contact];
+        }
+
+        $founderId = trim((string) $this->scopeValue(self::XML_FOUNDER_ID, $storeId));
+        if ($founderId !== '') {
+            $node['founder'] = [
+                '@id' => str_starts_with($founderId, 'http')
+                    ? $founderId
+                    : $url . ltrim($founderId, '/'),
+            ];
         }
 
         $address = $this->buildAddress($storeId);

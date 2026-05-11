@@ -89,6 +89,10 @@
                     <label>Additional sameAs URLs</label>
                     <comment>One URL per line. These are added to the Organization sameAs array in addition to the Social Profiles above.</comment>
                 </field>
+                <field id="founder_id" translate="label comment" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Founder @id Reference</label>
+                    <comment><![CDATA[Optional. Cross-reference a Person node by <code>@id</code>. Accepts either a bare fragment (e.g. <code>#founder</code>) or a full URL. Leave blank to omit the <code>founder</code> property.]]></comment>
+                </field>
             </group>
 
             <group id="structured_data" translate="label" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">

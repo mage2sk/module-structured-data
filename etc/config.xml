@@ -83,6 +83,7 @@
                 <postcode></postcode>
                 <country></country>
                 <same_as></same_as>
+                <founder_id></founder_id>
             </organization>
             <breadcrumbs>
                 <enable_breadcrumb_priority>0</enable_breadcrumb_priority>
