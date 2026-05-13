@@ -2,7 +2,7 @@
     "name": "mage2kishan/module-structured-data",
     "description": "Panth Structured Data \u2014 JSON-LD schemas for Magento 2: Product, Breadcrumb, Organization, Website, Article, Review, Video, Brand, FAQ, SaleEvent, ReturnPolicy, Certification, Energy Label, Pros/Cons, and more.",
     "type": "magento2-module",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "license": "proprietary",
     "keywords": [
         "magento2",

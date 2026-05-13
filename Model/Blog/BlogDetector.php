@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Panth\StructuredData\Model\Blog;
 
+use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -33,6 +34,7 @@ class BlogDetector
         private readonly ObjectManagerInterface $objectManager,
         private readonly StoreManagerInterface $storeManager,
         private readonly LoggerInterface $logger,
+        private readonly ResourceConnection $resource,
         array $supportedClasses = []
     ) {
         $this->supportedClasses = $supportedClasses;
@@ -99,12 +101,20 @@ class BlogDetector
 
             $collection = $collectionFactory->create();
 
-            // All three supported modules use addStoreFilter / addFieldToFilter('is_active', 1)
             if (method_exists($collection, 'addStoreFilter')) {
                 $collection->addStoreFilter($storeId);
             }
+            // Active-flag columns vary across blog modules — some ship
+            // `is_active`, others ship `enabled` or `status`. Filtering
+            // on a column the table doesn't have raises
+            // "Column not found" and silently drops every post. Probe
+            // the collection's main table for whichever of the common
+            // names actually exists, and apply that filter.
             if (method_exists($collection, 'addFieldToFilter')) {
-                $collection->addFieldToFilter('is_active', 1);
+                $activeColumn = $this->resolveActiveColumn($collection);
+                if ($activeColumn !== null) {
+                    $collection->addFieldToFilter($activeColumn, 1);
+                }
             }
             if (method_exists($collection, 'addActiveFilter')) {
                 $collection->addActiveFilter();
@@ -150,6 +160,40 @@ class BlogDetector
         }
 
         return $this->objectManager->get($collectionFactoryClass);
+    }
+
+    /**
+     * Pick whichever active-flag column actually exists on the collection's
+     * main table. Returns null when none of the known names match — the
+     * caller then skips the filter rather than producing an invalid query.
+     */
+    private function resolveActiveColumn(object $collection): ?string
+    {
+        try {
+            $mainTable = null;
+            if (method_exists($collection, 'getMainTable')) {
+                $mainTable = (string) $collection->getMainTable();
+            }
+            if (($mainTable === null || $mainTable === '') && method_exists($collection, 'getResource')) {
+                $resource = $collection->getResource();
+                if ($resource !== null && method_exists($resource, 'getMainTable')) {
+                    $mainTable = (string) $resource->getMainTable();
+                }
+            }
+            if ($mainTable === null || $mainTable === '') {
+                return null;
+            }
+            $columns = $this->resource->getConnection()->describeTable($mainTable);
+            foreach (['is_active', 'enabled', 'status'] as $candidate) {
+                if (isset($columns[$candidate])) {
+                    return $candidate;
+                }
+            }
+        } catch (\Throwable) {
+            // Treat introspection failure as "skip the filter" — better
+            // to over-include than to drop every post.
+        }
+        return null;
     }
 
     private function resolvePostUrl(object $post, string $baseUrl): string
