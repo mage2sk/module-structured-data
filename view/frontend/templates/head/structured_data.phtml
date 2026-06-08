@@ -10,6 +10,6 @@ if ($json === '') {
     return;
 }
 // The Aggregator already escapes </script> inside the JSON payload.
-// We output the JSON directly — no additional escaping needed here.
+// We output the JSON directly - no additional escaping needed here.
 ?>
 <script type="application/ld+json" data-panth-seo="jsonld"><?= /* @noEscape */ $json ?></script>
