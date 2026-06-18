@@ -1,38 +1,53 @@
 <!-- SEO Meta -->
 <!--
-  Title: Panth Structured Data — JSON-LD for Magento 2 (Hyva + Luma) | Panth Infotech
-  Description: Panth Structured Data emits schema.org JSON-LD for every page type in Magento 2 — Product / AggregateOffer / BreadcrumbList / Organization / WebSite / ItemList / Review / FAQPage / Article / VideoObject / MerchantReturnPolicy. Full product-type coverage (simple / configurable / bundle / grouped), strips Magento's native markup to avoid duplicates, auto-extracts FAQ pairs, supports Pros/Cons, Energy Label, Certifications, Sale Event, Multi-Region Shipping, and the full Organization sameAs stack. Theme-agnostic — identical output on Hyva and Luma. Compatible with Magento 2.4.4 - 2.4.8, PHP 8.1 - 8.4.
-  Keywords: magento 2 structured data, magento 2 json-ld, magento 2 schema.org, magento 2 rich results, magento 2 product schema, magento 2 breadcrumb schema, magento 2 organization schema, magento 2 aggregateoffer, magento 2 faqpage schema, hyva structured data, luma structured data, magento google rich results, panth structured data
+  Title: Magento 2 Structured Data Extension: JSON-LD Schema.org for Google Rich Results (Hyva + Luma) | Panth Infotech
+  Description: Panth Structured Data emits one JSON-LD block per page covering Product, Offer/AggregateOffer, BreadcrumbList, Organization, WebSite, ItemList, Review, FAQPage, Article, VideoObject, MerchantReturnPolicy, and more. Full product-type coverage (simple, configurable, bundle, grouped). Strips Magento's native duplicate markup. Theme-agnostic, FPC-friendly. Works on Magento 2.4.4 to 2.4.8 and PHP 8.1 to 8.4. Built by Top Rated Plus Magento developer Kishan Savaliya.
+  Keywords: magento 2 structured data, magento 2 json-ld, magento 2 schema.org, magento 2 rich results, magento 2 product schema, magento 2 breadcrumb schema, magento 2 organization schema, magento 2 aggregateoffer, magento 2 faqpage schema, hyva structured data, luma structured data, magento google rich results, panth structured data, magento 2 seo schema extension
   Author: Kishan Savaliya (Panth Infotech)
-  Canonical: https://github.com/mage2sk/module-structured-data
+  Canonical: https://kishansavaliya.com/magento-2-structured-data.html
 -->
 
-# Panth Structured Data — JSON-LD for Magento 2 (Hyva + Luma) | Panth Infotech
+# Magento 2 Structured Data Extension: JSON-LD Schema.org for Google Rich Results (Hyva + Luma)
 
 [![Magento 2.4.4 - 2.4.8](https://img.shields.io/badge/Magento-2.4.4%20--%202.4.8-orange?logo=magento&logoColor=white)](https://magento.com)
 [![PHP 8.1 - 8.4](https://img.shields.io/badge/PHP-8.1%20--%208.4-blue?logo=php&logoColor=white)](https://php.net)
-[![Hyva Compatible](https://img.shields.io/badge/Hyva-Compatible-0D9488)](https://www.hyva.io)
-[![Luma Compatible](https://img.shields.io/badge/Luma-Compatible-orange)]()
+[![Hyva + Luma](https://img.shields.io/badge/Themes-Hyva%20%2B%20Luma-14b8a6)](https://www.hyva.io)
+[![Live Demo & Details](https://img.shields.io/badge/Live%20Demo%20%26%20Details-magento--2--structured--data-0D9488?style=flat)](https://kishansavaliya.com/magento-2-structured-data.html)
 [![Packagist](https://img.shields.io/badge/Packagist-mage2kishan%2Fmodule--structured--data-orange?logo=packagist&logoColor=white)](https://packagist.org/packages/mage2kishan/module-structured-data)
-[![GitHub](https://img.shields.io/badge/GitHub-mage2sk%2Fmodule--structured--data-181717?logo=github&logoColor=white)](https://github.com/mage2sk/module-structured-data)
 [![Upwork Top Rated Plus](https://img.shields.io/badge/Upwork-Top%20Rated%20Plus-14a800?logo=upwork&logoColor=white)](https://www.upwork.com/freelancers/~016dd1767321100e21)
 [![Website](https://img.shields.io/badge/Website-kishansavaliya.com-0D9488)](https://kishansavaliya.com)
 
 <p align="center">
-  <img src="docs/images/hero-banner.png" alt="Magento 2 Structured Data JSON-LD free extension for Google Rich Results, Hyva and Luma ready — built by Kishan Savaliya (Panth Infotech), Top Rated Plus on Upwork." width="100%" />
+  <img src="docs/images/hero-banner.png" alt="Magento 2 Structured Data JSON-LD extension for Google Rich Results, Hyva and Luma ready, built by Kishan Savaliya (Panth Infotech), Top Rated Plus on Upwork." width="100%" />
 </p>
 
-> **One JSON-LD block per page, product-type aware, theme-agnostic.** Panth Structured Data emits a single `<script type="application/ld+json">` with a deduplicated `@graph` covering every schema.org node Google cares about — Product, Offer / AggregateOffer, BreadcrumbList, Organization, WebSite + SearchAction, ItemList, Review + AggregateRating, FAQPage, Article, VideoObject, MerchantReturnPolicy — with automatic strip of Magento's native duplicate markup. Identical output on Hyva and Luma, zero theme overrides.
+> **One JSON-LD block per page, zero duplicate schemas.** Panth Structured Data adds a single `<script type="application/ld+json">` to every page with a deduplicated `@graph` covering Product, Offer/AggregateOffer, BreadcrumbList, Organization, WebSite, ItemList, Review, FAQPage, Article, VideoObject, and MerchantReturnPolicy. It also removes Magento's built-in duplicate markup. Identical output on Hyva and Luma, no theme overrides needed.
 
-**Panth Structured Data** is a production-grade schema.org JSON-LD module for Magento 2. A single head block feeds a pipeline of 24 content providers that each contribute one or more nodes to a shared `@graph` which an `Aggregator` deduplicates by `@id` and deep-merges so two providers contributing to the same entity always produce a single coherent node. A plugin on `AbstractBlock::afterToHtml` strips Magento's native `application/ld+json` scripts from `product.info.main`, `breadcrumbs` and `product.price.final` so you never ship two versions of the same schema. Every toggle, attribute code, and social URL lives under **Admin → Stores → Configuration → Panth Extensions → Structured Data** — nothing runs unless it's applicable on the current page.
-
-Full product-type coverage: **simple** products emit `Product + Offer`, **configurable** emits `Product + AggregateOffer` with one child `Offer` per variant (15 variants → 15 offers), **bundle** emits `Product + AggregateOffer` with `lowPrice` / `highPrice` from the bundle price range, **grouped** emits `Product + AggregateOffer` with one child `Offer` per grouped SKU. Across all variant types the shared offer-level extras (`itemCondition`, `seller @id → #organization`, `priceValidUntil`, `shippingDetails`, `hasMerchantReturnPolicy`) ride through the deep-merge so rich-result validators always see a complete Offer.
+**Product page:** [kishansavaliya.com/magento-2-structured-data.html](https://kishansavaliya.com/magento-2-structured-data.html)
 
 ---
 
-## 🚀 Need Custom Magento 2 Development?
+## Quick Answer
 
-> **Get a free quote for your project in 24 hours** — custom modules, Hyva themes, performance optimization, M1→M2 migrations, and Adobe Commerce Cloud.
+**What is Panth Structured Data?** It is a Magento 2 JSON-LD extension that outputs schema.org structured data on every page so Google can show rich results (price, rating stars, breadcrumbs, FAQs, merchant listings) for your store.
+
+**What does it add to my store?**
+
+- A **single `@graph` JSON-LD block** per page with all applicable schema.org nodes, no duplicate scripts.
+- **Full product type coverage** for simple, configurable, bundle, grouped, virtual, and downloadable products.
+- **Organization, WebSite + SearchAction, BreadcrumbList, and ItemList** on non-product pages.
+- **FAQPage auto-extraction**, Article, VideoObject, MerchantReturnPolicy, and specialist nodes like Pros/Cons, Energy Label, Certifications, and Sale Event.
+- **Native markup removal** to stop Magento's built-in JSON-LD from clashing with this module's output.
+
+**Which themes are supported?** Both **Hyva** and **Luma** (and any other Magento theme). The head block attaches through `head.additional` in standard layout XML, with no JS or RequireJS involved.
+
+**What does it need?** Magento 2.4.4 to 2.4.8, PHP 8.1 to 8.4, and the free `mage2kishan/module-core` package.
+
+---
+
+## Need Custom Magento 2 Development?
+
+> **Get a free quote for your project in 24 hours** for custom modules, Hyva themes, performance work, M1 to M2 migrations, and Adobe Commerce Cloud.
 
 <p align="center">
   <a href="https://kishansavaliya.com/get-quote">
@@ -44,24 +59,24 @@ Full product-type coverage: **simple** products emit `Product + Offer`, **config
 <tr>
 <td width="50%" align="center">
 
-### 🏆 Kishan Savaliya
+### Kishan Savaliya
 **Top Rated Plus on Upwork**
 
 [![Hire on Upwork](https://img.shields.io/badge/Hire%20on%20Upwork-Top%20Rated%20Plus-14a800?style=for-the-badge&logo=upwork&logoColor=white)](https://www.upwork.com/freelancers/~016dd1767321100e21)
 
-100% Job Success • 10+ Years Magento Experience
-Adobe Certified • Hyva Specialist
+100% Job Success - 10+ Years Magento Experience
+Adobe Certified - Hyva Specialist
 
 </td>
 <td width="50%" align="center">
 
-### 🏢 Panth Infotech Agency
+### Panth Infotech Agency
 **Magento Development Team**
 
 [![Visit Agency](https://img.shields.io/badge/Visit%20Agency-Panth%20Infotech-14a800?style=for-the-badge&logo=upwork&logoColor=white)](https://www.upwork.com/agencies/1881421506131960778/)
 
-Custom Modules • Theme Design • Migrations
-Performance • SEO • Adobe Commerce Cloud
+Custom Modules - Theme Design - Migrations
+Performance - SEO - Adobe Commerce Cloud
 
 </td>
 </tr>
@@ -73,30 +88,27 @@ Performance • SEO • Adobe Commerce Cloud
 
 ## Table of Contents
 
-- [Admin Preview](#admin-preview)
+- [Who Is It For](#who-is-it-for)
 - [Key Features](#key-features)
-- [How It Works](#how-it-works)
-- [Schema.org Nodes Emitted](#schemaorg-nodes-emitted)
-- [Product Type Coverage](#product-type-coverage)
 - [Compatibility](#compatibility)
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Quick Test — URLs You Can Hit Right Now](#quick-test--urls-you-can-hit-right-now)
-- [How to Validate with Google Search Console (Step by Step)](#how-to-validate-with-google-search-console-step-by-step)
-- [Other Validators](#other-validators)
-- [Per-Provider Deep Dive](#per-provider-deep-dive)
-- [Troubleshooting](#troubleshooting)
+- [How It Works](#how-it-works)
+- [Schema.org Nodes Emitted](#schemaorg-nodes-emitted)
 - [FAQ](#faq)
 - [Support](#support)
 - [About Panth Infotech](#about-panth-infotech)
+- [Quick Links](#quick-links)
 
 ---
 
-## Admin Preview
+## Who Is It For
 
-**Stores → Configuration → Panth Extensions → Structured Data** carries the full configuration surface — Social Profiles (Organization `sameAs`), Organization Details, Structured Data toggles (JSON-LD), and Breadcrumbs. Every field is `[store view]`-scoped so a multi-store install can ship a different schema per storefront.
-
-![Admin configuration](docs/images/admin-config.png)
+- **Stores that want Google rich results** (price, rating stars, breadcrumbs, FAQ dropdowns, merchant listings) without writing any schema code by hand.
+- **Merchants with large catalogs** that include configurable, bundle, and grouped products, where each type needs its own offer structure to validate correctly.
+- **Hyva storefronts** that need a schema module with no jQuery, RequireJS, or Knockout dependency.
+- **Stores already using Magento's native JSON-LD** and getting duplicate-schema warnings in Search Console, since this module removes the native output and replaces it with a clean single `@graph`.
+- **Multi-store setups** where each store view needs its own Organization name, social profiles, and language-specific structured data.
 
 ---
 
@@ -104,231 +116,59 @@ Performance • SEO • Adobe Commerce Cloud
 
 ### One Block, One Graph, Zero Duplicates
 
-- **Single `<script type="application/ld+json" data-panth-seo="jsonld">`** per page. Everything the module knows about the current entity lives inside one `@graph`.
-- **Aggregator** deduplicates by `@id` and **deep-merges** so the Product node emitted by `ProductProvider` and the AggregateOffer from `ConfigurableOfferProvider` become one coherent Product with one Offer, no collisions.
-- **Native-markup strip plugin** removes Magento's built-in `application/ld+json` from `product.info.main`, `breadcrumbs`, `product.price.final` plus all `itemprop` / `itemscope` / `itemtype` microdata attributes on those blocks — so you never ship two Product schemas.
-- **Own blocks are explicitly skipped** — scripts carrying `data-panth-seo` are preserved.
+- **Single `<script type="application/ld+json">` per page** with a deduplicated `@graph` covering every applicable node.
+- **Aggregator with deep-merge** so two providers contributing to the same `@id` produce one coherent node, not two conflicting objects.
+- **Native markup removal plugin** strips Magento's built-in `application/ld+json` scripts from `product.info.main`, `breadcrumbs`, and `product.price.final`, and also removes `itemprop`/`itemscope`/`itemtype` microdata attributes from those blocks.
+- **XSS-safe JSON payload** where every `</` is escaped to `<\/` so a product name with HTML can never break the script tag.
 
 ### Full Product Type Coverage
 
-- **Simple** → `Product` + scalar `Offer` (price / availability / itemCondition / seller / priceValidUntil / shippingDetails).
-- **Configurable** → `Product` + `AggregateOffer` (`lowPrice` / `highPrice` / `offerCount`) with one child `Offer` per visible variant, each carrying its own price / sku / availability / url.
-- **Bundle** → `Product` + `AggregateOffer` with `lowPrice` / `highPrice` pulled from the bundle option price range. Fixed-price bundles get a single `Offer` with the fixed final price.
-- **Grouped** → `Product` + `AggregateOffer` with one child `Offer` per grouped SKU (name / price / availability / sku / url).
-- **Virtual / Downloadable** → treated like simple products — `Product` + `Offer`.
-- **ProductGroup + hasVariant** (optional, opt-in) → richer variant modelling via `ProductGroup` + `variesBy` on `color` / `size` / `material`.
+- **Simple and virtual/downloadable** emit `Product + Offer` with price, availability, itemCondition, seller, priceValidUntil, and shippingDetails.
+- **Configurable** emits `Product + AggregateOffer` with lowPrice, highPrice, offerCount, and one child `Offer` per visible variant.
+- **Bundle (dynamic price)** emits `Product + AggregateOffer` with lowPrice and highPrice from the option price range.
+- **Bundle (fixed price)** emits `Product + Offer` with the fixed final price.
+- **Grouped** emits `Product + AggregateOffer` with one child `Offer` per grouped SKU (name, price, availability, SKU, URL).
+- **ProductGroup + hasVariant** (opt-in) adds richer variant modelling for configurable products via `variesBy` on color, size, and material.
 
 ### Identity Nodes
 
-- **Organization** — name / url / logo / legalName / contactPoint (phone + email) / PostalAddress / `sameAs` array merging the 7 dedicated social-profile fields (Facebook, Twitter/X, Instagram, LinkedIn, YouTube, Pinterest, TikTok) with a free-form textarea for anything else.
-- **WebSite** — with `SearchAction` for Google Sitelinks Search Box eligibility.
-- **Seller** — auto-merged into `#organization` by default (since `business_type = Organization`); switches the `@type` to `LocalBusiness` / `Store` / `OnlineStore` when configured.
+- **Organization** with name, URL, logo, legalName, phone, email, full PostalAddress, and a `sameAs` array from seven dedicated social-profile fields (Facebook, Twitter/X, Instagram, LinkedIn, YouTube, Pinterest, TikTok) plus a freeform additional URLs field.
+- **WebSite** with `SearchAction` pointing at the store's catalogsearch URL, which makes the site eligible for Google Sitelinks Search Box.
+- **Seller** merged into `#organization` by default, with an option to promote the type to LocalBusiness, Store, or OnlineStore.
 
-### Content-Rich Nodes
+### Content Nodes
 
-- **BreadcrumbList** — full category hierarchy for products (Home → Gear → Bags → Product), not just Home + Product. Respects admin-configured category priority weights when enabled.
-- **ItemList** — on category pages, listing products with `position` for rich carousel results.
-- **Review** + **AggregateRating** — top-N approved reviews with ISO 8601 `datePublished`, scaled 1-5 rating from Magento's 0-100 percent votes.
-- **FAQPage** — auto-extracted `Question` / `acceptedAnswer` pairs from product / category / CMS descriptions. Recognises `<h2>…?</h2><p>…</p>` and `<h3>…?</h3><p>…</p>` patterns.
-- **Article** — for CMS pages under `blog/*`, `news/*`, `articles/*` or carrying `article` in their meta keywords.
-- **VideoObject** — for product media gallery entries of type `external-video` (YouTube / Vimeo).
+- **BreadcrumbList** with full category hierarchy for products (Home, Category, Subcategory, Product), using configurable priority weights when enabled.
+- **ItemList** on category pages, listing products with their position for rich carousel eligibility.
+- **Review + AggregateRating** from Magento's approved product reviews, scaled to a 1-5 rating with ISO 8601 datePublished on each review.
+- **FAQPage** auto-extracted from `<h2>Question?</h2><p>Answer.</p>` and `<h3>` patterns in product, category, and CMS descriptions. Needs at least two Q&A pairs.
+- **Article** on CMS pages whose URL identifier starts with `blog/`, `news/`, or `articles/`, or whose meta keywords include `article`.
+- **VideoObject** for product media gallery entries of type `external-video` (YouTube/Vimeo).
 
-### Merchant / Pricing Extras
+### Merchant and Pricing Extras
 
-- **MerchantReturnPolicy** — `applicableCountry` (ISO 3166-1), `merchantReturnDays` (int), `returnMethod`, `returnFees` (properly mapped to the schema.org `ReturnFeesEnumeration` URL).
-- **Product** pricing: `priceValidUntil` from product `special_to_date` → admin default → auto +1 year fallback; `availability` from `isSalable()` / `StockRegistry` with LimitedAvailability / BackOrder / PreOrder / Discontinued beyond InStock / OutOfStock.
-- **Sale Event** (opt-in) — `priceSpecification` with `validFrom` / `validThrough` on products with active special prices.
-- **Delivery Methods** — structured shipping details from admin-listed methods.
-- **Payment Methods** — `acceptedPaymentMethod` in Offer from admin list.
-- **Multi-Region Shipping** (auto-detect) — reads Magento's table-rate / flat-rate config and emits `shippingDetails` per region. Only when admin hasn't configured manual `delivery_methods`.
+- **MerchantReturnPolicy** with applicableCountry, merchantReturnDays, returnMethod, and returnFees mapped to the correct `ReturnFeesEnumeration` URL.
+- **Sale Event** (opt-in) adds `priceSpecification` with `validFrom` and `validThrough` on products with an active special price.
+- **Delivery Methods** and **Payment Methods** added to Offer via admin text fields.
+- **Multi-region shipping auto-detect** reads Magento's table-rate and flat-rate config when no manual delivery methods are set.
+- **priceValidUntil** from `special_to_date`, falling back to an admin default date, then automatically to one year ahead.
+- **Availability** with six levels: InStock, LimitedAvailability (below configurable threshold), OutOfStock, BackOrder, PreOrder, and Discontinued.
 
-### Specialist Nodes
+### Specialist Nodes (All Opt-in)
 
-- **Brand** — standalone Brand node using the configured product attribute (default `manufacturer`) + admin-configurable default fallback brand.
-- **Certifications** — `hasCertification` from a textarea attribute in `Authority | Name | ID` format.
-- **Energy Efficiency Label (EU)** — `hasEnergyConsumptionDetails` with grades A–G.
-- **Pros / Cons** — `positiveNotes` / `negativeNotes` ItemLists from textarea attributes.
-- **Custom Properties** — admin-configurable JSON object deep-merged into the Product node for anything beyond the built-in schemas (e.g. `material`, `audience`, custom-vocabulary facets).
+- **Brand** node using a configurable product attribute (default `manufacturer`) with a fallback default brand name.
+- **Certifications** from a textarea attribute in `Authority | Name | ID` format, emitted as `hasCertification`.
+- **Energy Efficiency Label (EU)** with grades A-G emitted as `hasEnergyConsumptionDetails`.
+- **Pros/Cons** from two textarea attributes emitted as `positiveNotes` and `negativeNotes` ItemLists.
+- **Custom Properties** - an admin JSON field deep-merged into the Product node for anything outside the built-in schemas.
 
 ### Production-Grade Implementation
 
-- **Theme-agnostic** — head block attached to `head.additional` via `view/frontend/layout/default.xml`. No JS, no RequireJS, no `x-magento-init`. Identical output on Hyva, Luma, Breeze, and every custom theme.
-- **Fully cacheable** — the head block is `cacheable="true"`, so FPC bakes the JSON-LD alongside the rest of the `<head>` and the providers only run on uncached renders.
-- **ISO 8601 dates everywhere** — product `dateModified` / `datePublished`, review `datePublished`, article dates, sale `validFrom`/`validThrough` all go through `DateTimeImmutable::format(ATOM)` for strict schema.org compliance.
-- **Attribute-text coerced** — `getAttributeText()` return values (string | array | false | null from multi-select attributes) are normalised before use, preventing a single multi-select attribute from silently killing the entire Product node.
-- **XSS-safe JSON payload** — every `</` inside the JSON is escaped to `<\/` so browsers can't be tricked into closing the `<script>` tag early.
-
----
-
-## How It Works
-
-The module is a pipeline: **admin config → providers → aggregator → head block → `<script>` tag**.
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│  Admin → Stores → Configuration → Panth Extensions → Structured Data│
-│   (toggles, attribute codes, social URLs, organization fields)       │
-└────────────────────────────────────┬────────────────────────────────┘
-                                     │
-                 Helper\Config reads every field
-                                     ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│  Aggregator (di.xml-registered pipeline of 24 providers)             │
-│                                                                      │
-│   OrganizationProvider  → Organization #organization                 │
-│   WebsiteProvider       → WebSite #website (+ SearchAction)          │
-│   BreadcrumbProvider    → BreadcrumbList                             │
-│   ProductProvider       → Product #product + scalar Offer extras     │
-│   FaqExtractor          → FAQPage (if Q&A pairs detected)            │
-│   ReviewProvider        → Review[] (top 5 approved)                  │
-│   VideoProvider         → VideoObject[] (external-video entries)     │
-│   CmsArticleProvider    → Article (blog-like CMS pages)              │
-│   ReturnPolicyProvider  → MerchantReturnPolicy                       │
-│   BrandProvider         → Brand                                      │
-│   ProductListProvider   → ItemList (category pages)                  │
-│   PaymentMethodProvider → Offer (acceptedPaymentMethod)              │
-│   DeliveryMethodProvider→ Offer (shippingDetails)                    │
-│   MultiRegionShipping   → Offer (multi-region shippingDetails)       │
-│   ConfigurableOffer     → Product #product → AggregateOffer          │
-│   GroupedOffer          → Product #product → AggregateOffer (group)  │
-│   BundleOffer           → Product #product → AggregateOffer (bundle) │
-│   CustomProperties      → Product #product + merchant-defined JSON   │
-│   EnergyLabel           → Product #product + hasEnergyConsumption    │
-│   Certification         → Product #product + hasCertification        │
-│   SaleEvent             → Product #product + priceSpecification      │
-│   ProductGroup          → ProductGroup + hasVariant                  │
-│   ProsCons              → Product #product + positiveNotes/negative  │
-│   SellerProvider        → Organization #organization (merged)        │
-└────────────────────────────────────┬────────────────────────────────┘
-                                     │
-                 Deep-merge by @id, deduplicate, validate
-                                     ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│  {"@context":"https://schema.org","@graph":[ ...merged nodes... ]}   │
-│  JSON_UNESCAPED_SLASHES + JSON_UNESCAPED_UNICODE + `</` → `<\/`     │
-└────────────────────────────────────┬────────────────────────────────┘
-                                     │
-                      Block\Head\StructuredData echoes inside:
-                                     ▼
-┌─────────────────────────────────────────────────────────────────────┐
-│  <script type="application/ld+json" data-panth-seo="jsonld">         │
-│    { ...full @graph... }                                             │
-│  </script>                                                           │
-│                                                                      │
-│  RemoveNativeMarkupPlugin also runs on AbstractBlock::afterToHtml    │
-│  and strips Magento's native ld+json + microdata from three blocks:  │
-│     product.info.main, breadcrumbs, product.price.final              │
-│  (own blocks carrying data-panth-seo are explicitly preserved)       │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-### Six things the Aggregator does
-
-1. **Applicability check** — every provider exposes `isApplicable()`. Product-scoped providers return `false` on CMS pages, `ReturnPolicyProvider` returns `false` when `return_policy_days = 0`, `FaqExtractor` defers to `Panth_Faq` when that module owns the current page. Providers that return `false` are skipped entirely.
-2. **Config gate** — `Config::isStructuredDataEnabled($provider->getCode())` reads `panth_structured_data/structured_data/{code}`. Admin disables any provider with a single Yes/No toggle.
-3. **Node collection** — applicable + enabled providers' `getJsonLd()` returns are collected. Single-node returns and list-of-nodes returns both work.
-4. **Dedup + deep-merge** — two nodes with the same `@id` get merged key-by-key. Scalars from later providers win, arrays recurse, new keys get appended. Two providers contributing to the same Product, Organization, or Offer always produce one coherent node.
-5. **Document shape** — one node in `@graph` → inline the node under `@context`. Multiple nodes → wrap in `@graph`.
-6. **XSS safety** — every `</` in the serialised JSON is replaced with `<\/` so the `<script>` tag can never be closed early by a malicious product name.
-
-### The deep-merge, concretely
-
-Before merge (two separate provider outputs on a configurable PDP):
-
-```json
-// ProductProvider
-{
-  "@type": "Product",
-  "@id": "https://example.com/hoodie.html#product",
-  "name": "Chaz Kangeroo Hoodie",
-  "offers": {
-    "@type": "Offer",
-    "itemCondition": "https://schema.org/NewCondition",
-    "seller": {"@id": "https://example.com/#organization"},
-    "priceValidUntil": "2027-04-23",
-    "shippingDetails": { ... }
-  }
-}
-
-// ConfigurableOfferProvider
-{
-  "@type": "Product",
-  "@id": "https://example.com/hoodie.html#product",
-  "offers": {
-    "@type": "AggregateOffer",
-    "lowPrice": "52.00",
-    "highPrice": "52.00",
-    "offerCount": 15,
-    "priceCurrency": "USD",
-    "offers": [ {...15 child offers...} ]
-  }
-}
-```
-
-After merge in `@graph`:
-
-```json
-{
-  "@type": "Product",
-  "@id": "https://example.com/hoodie.html#product",
-  "name": "Chaz Kangeroo Hoodie",
-  "offers": {
-    "@type": "AggregateOffer",
-    "lowPrice": "52.00",
-    "highPrice": "52.00",
-    "offerCount": 15,
-    "priceCurrency": "USD",
-    "itemCondition": "https://schema.org/NewCondition",
-    "seller": {"@id": "https://example.com/#organization"},
-    "priceValidUntil": "2027-04-23",
-    "shippingDetails": { ... },
-    "offers": [ {...15 child offers...} ]
-  }
-}
-```
-
-Scalar `@type` is overridden by the later `ConfigurableOfferProvider` (`"AggregateOffer"` wins). Every scalar key unique to one side is preserved. `shippingDetails` (nested array) comes through untouched from `ProductProvider`. `offers` (the child-offer array from `ConfigurableOfferProvider`) is added without conflict.
-
----
-
-## Schema.org Nodes Emitted
-
-| Node | @id pattern | When |
-|---|---|---|
-| `Organization` | `{store_url}#organization` | Every page |
-| `WebSite` | `{store_url}#website` | Every page (toggle) |
-| `BreadcrumbList` | `{store_url}#breadcrumb-{sha1 of path}` | Product, category, CMS (2+ items) |
-| `Product` | `{product_url}#product` | Product pages |
-| `Offer` / `AggregateOffer` | inline under `Product.offers` | Product pages (shape depends on type) |
-| `Review` | no @id (list items) | Product pages with approved reviews |
-| `AggregateRating` | inline under `Product.aggregateRating` | Product pages with votes |
-| `MerchantReturnPolicy` | no @id | Product pages when `return_policy_days > 0` |
-| `FAQPage` | `{store_url}#faq-{sha1 of path}` | Any page with ≥2 Q&A pairs in description |
-| `Article` | `{page_url}#article` | Blog-like CMS pages |
-| `VideoObject` | no @id (list items) | Product pages with external-video gallery entries |
-| `ItemList` | `{category_url}#productlist` | Category pages with products |
-| `Brand` | inline under `Product.brand` | Product pages when brand attribute has value |
-| `ProductGroup` | `{parent_url}#productgroup` | Configurable products (opt-in) |
-
-All URL-valued attributes (`og:url`, `url`, `image`, `logo`, `sameAs`) preserve `:` and `/` (no entity-encoding). All dates are ISO 8601 (`YYYY-MM-DDTHH:MM:SS+00:00`). All enumerations (`availability`, `itemCondition`, `returnFees`, `returnPolicyCategory`, `returnMethod`) are full schema.org URLs.
-
----
-
-## Product Type Coverage
-
-Tested end-to-end across Magento's sample catalogue on both Hyva and Luma:
-
-| Type | Sample SKU | Sample URL | `Product.offers.@type` | Notes |
-|---|---|---|---|---|
-| Simple | `24-WB02` | `/compete-track-tote.html` | `Offer` | price, availability, itemCondition, seller, priceValidUntil, shippingDetails |
-| Configurable | `MH01` | `/chaz-kangeroo-hoodie.html` | `AggregateOffer` | 15 child Offers (one per variant), lowPrice / highPrice / offerCount |
-| Bundle (dynamic) | `24-WG080` | `/sprite-yoga-companion-kit.html` | `AggregateOffer` | lowPrice / highPrice from bundle option range, offerCount = 1 |
-| Bundle (fixed) | any fixed-price bundle | — | `Offer` | single Offer with fixed final price |
-| Grouped | `24-WG085_Group` | `/set-of-sprite-yoga-straps.html` | `AggregateOffer` | 3 child Offers (one per grouped SKU) |
-| Virtual | any virtual product | — | `Offer` | same as simple |
-| Downloadable | any downloadable product | — | `Offer` | same as simple |
-
-Across all variant types the shared offer-level extras (`itemCondition`, `seller @id`, `priceValidUntil`, `shippingDetails`) merge into the `AggregateOffer` via the deep-merge path, so a bundle / grouped / configurable product still carries its return policy and product condition on the Offer node.
+- **Theme-agnostic** head block attached to `head.additional` via standard layout XML. No JS, no RequireJS, no `x-magento-init`. Same output on Hyva, Luma, Breeze, and any custom theme.
+- **Fully cacheable** block, so FPC bakes the JSON-LD into the page head and providers only run on uncached renders.
+- **ISO 8601 dates** on every date field, with strict `DateTimeImmutable` formatting.
+- **Multi-select attribute safety** so a product with a multi-select brand or gender attribute never silently kills the whole Product node.
+- **Store view scoped config** so every field works per-store in a multi-store install.
 
 ---
 
@@ -338,15 +178,15 @@ Across all variant types the shared offer-level extras (`itemCondition`, `seller
 |---|---|
 | Magento Open Source | 2.4.4, 2.4.5, 2.4.6, 2.4.7, 2.4.8 |
 | Adobe Commerce | 2.4.4, 2.4.5, 2.4.6, 2.4.7, 2.4.8 |
-| Adobe Commerce Cloud | 2.4.4 — 2.4.8 |
+| Adobe Commerce Cloud | 2.4.4 to 2.4.8 |
 | PHP | 8.1.x, 8.2.x, 8.3.x, 8.4.x |
 | MySQL | 8.0+ |
 | MariaDB | 10.4+ |
 | Hyva Theme | 1.0+ (native support) |
 | Luma Theme | Native support |
-| Required Dependency | `mage2kishan/module-core` ^1.0 |
+| Required Dependency | `mage2kishan/module-core` (free) |
 
-Works standalone (no other Panth module needed) and composes cleanly with `Panth_AdvancedSEO`, `Panth_Faq`, `Panth_Testimonials` when any of those are installed (specialist providers defer to those modules on their own routes).
+Works standalone and composes cleanly with `Panth_AdvancedSEO`, `Panth_Faq`, and `Panth_Testimonials` when installed.
 
 ---
 
@@ -365,109 +205,112 @@ bin/magento cache:flush
 
 ### Manual Installation via ZIP
 
-1. Download the latest release ZIP from [Packagist](https://packagist.org/packages/mage2kishan/module-structured-data) or the [Adobe Commerce Marketplace](https://commercemarketplace.adobe.com).
+1. Download the latest release from [Packagist](https://packagist.org/packages/mage2kishan/module-structured-data) or from the [product page](https://kishansavaliya.com/magento-2-structured-data.html).
 2. Extract the contents to `app/code/Panth/StructuredData/` in your Magento installation.
-3. Ensure `Panth_Core` is installed (required dependency).
-4. Run the same commands as above starting from `bin/magento module:enable`.
+3. Make sure `Panth_Core` is installed too (required dependency).
+4. Run the commands above starting from `bin/magento module:enable`.
 
 ### Verify Installation
 
 ```bash
 bin/magento module:status Panth_StructuredData
-# Expected output: Module is enabled
+# Expected: Module is enabled
 
 # Every page now carries one JSON-LD block:
 curl -ks https://your-store.test/ | grep -c 'application/ld+json'
-# Expected output: 1
+# Expected: 1
+```
+
+After install, open:
+```
+Admin -> Stores -> Configuration -> Panth Extensions -> Structured Data
 ```
 
 ---
 
 ## Configuration
 
-Navigate to **Admin → Stores → Configuration → Panth Extensions → Structured Data**. Four fieldsets:
+Go to **Stores -> Configuration -> Panth Extensions -> Structured Data**.
 
-### Social Profiles (Organization `sameAs`)
+### Social Profiles (Organization sameAs)
 
-| Field | Purpose |
-|---|---|
-| Facebook URL | Full `https://www.facebook.com/yourpage` URL added to `sameAs` |
-| Twitter (X) URL | Full `https://twitter.com/yourhandle` URL |
-| Instagram URL | Full Instagram profile URL |
-| LinkedIn URL | Full LinkedIn company-page URL |
-| YouTube URL | Full YouTube channel URL |
-| Pinterest URL | Full Pinterest profile URL |
-| TikTok URL | Full TikTok profile URL |
-
-All URLs validated against `validate-url` and the module's internal HTTPS-only allowlist before being emitted.
+| Setting | Group | Default | Description |
+|---|---|---|---|
+| Facebook URL | Social Profiles | (empty) | Full Facebook page URL added to Organization sameAs |
+| Twitter (X) URL | Social Profiles | (empty) | Full Twitter/X profile URL |
+| Instagram URL | Social Profiles | (empty) | Full Instagram profile URL |
+| LinkedIn URL | Social Profiles | (empty) | Full LinkedIn company page URL |
+| YouTube URL | Social Profiles | (empty) | Full YouTube channel URL |
+| Pinterest URL | Social Profiles | (empty) | Full Pinterest profile URL |
+| TikTok URL | Social Profiles | (empty) | Full TikTok profile URL |
 
 ### Organization Details
 
-| Field | Purpose |
-|---|---|
-| Legal Name | `legalName` on the Organization node |
-| Logo URL | `logo` (ImageObject) |
-| Phone | `contactPoint.telephone` — overrides `general/store_information/phone` |
-| Email | `contactPoint.email` |
-| Street / City / Region / Postal Code | Full `PostalAddress` |
-| Country (ISO 3166-1 alpha-2) | `addressCountry` — e.g. `US`, `GB`, `DE` |
-| Additional `sameAs` URLs | One URL per line — appended to the social-profile `sameAs` array |
+| Setting | Group | Default | Description |
+|---|---|---|---|
+| Legal Name | Organization Details | (empty) | `legalName` on the Organization node |
+| Logo URL | Organization Details | (empty) | Full URL to the organization logo image |
+| Phone | Organization Details | (empty) | Overrides Store Information phone for Organization contactPoint |
+| Email | Organization Details | (empty) | Contact email for Organization contactPoint |
+| Street Address | Organization Details | (empty) | Street line of the PostalAddress |
+| City / Locality | Organization Details | (empty) | City for PostalAddress |
+| State / Region | Organization Details | (empty) | Region for PostalAddress |
+| Postal Code | Organization Details | (empty) | Postal code for PostalAddress |
+| Country (ISO 3166-1 alpha-2) | Organization Details | (empty) | e.g. US, GB, DE |
+| Additional sameAs URLs | Organization Details | (empty) | One URL per line, appended to the sameAs array |
+| Founder @id Reference | Organization Details | (empty) | Optional Person @id cross-reference for the founder property |
 
 Leave empty to fall back to core Magento Store Information.
 
 ### Structured Data (JSON-LD)
 
-Master toggles + attribute codes + defaults. Every toggle is Yes/No, every attribute code is a plain Magento attribute identifier.
-
-| Setting | Default | What it controls |
-|---|---|---|
-| Enable Product | Yes | Emits `Product` + `Offer` on product pages |
-| Enable Breadcrumb | Yes | Emits `BreadcrumbList` everywhere |
-| Enable Organization | Yes | Emits `Organization` on every page |
-| Enable WebSite / SiteLinks | Yes | Emits `WebSite` + `SearchAction` |
-| Enable Auto-Extracted FAQ Schema | Yes | Scans descriptions for Q&A pairs |
-| Enable Article | Yes | Emits `Article` on blog-like CMS pages |
-| Enable Review | Yes | Emits `Review` + `AggregateRating` |
-| Enable VideoObject | Yes | Emits `VideoObject` for external-video gallery entries |
-| Enable Brand | Yes | Emits `Brand` node |
-| Enable Seller | Yes | Emits Seller (merged into `#organization` by default) |
-| Configurable: Multi-Offer | Yes | Emits one child `Offer` per configurable variant |
-| Remove Native Magento JSON-LD Markup | Yes | Strips Magento's native ld+json on product / breadcrumb blocks |
-| Return Policy Days | 30 | `merchantReturnDays` — set to 0 to disable the MerchantReturnPolicy node |
-| Brand Attribute Code | `manufacturer` | Product attribute used for Brand name |
-| GTIN Attribute Code | *(empty)* | Product attribute for `gtin` / `gtin13` / `ean` |
-| MPN Attribute Code | *(empty)* | Product attribute for Manufacturer Part Number |
-| Enable Product List Schema | Yes | `ItemList` on category pages |
-| Accepted Payment Methods | *(empty)* | One method per line (Visa, Mastercard, PayPal) |
-| Delivery Methods | *(empty)* | One method per line (Standard Shipping, Express) |
-| Product Condition | New | `itemCondition` enum (New / Used / Refurbished / Damaged) |
-| Default Price Valid Until | *(empty)* | `YYYY-MM-DD` — falls back to +1 year |
-| Custom JSON-LD Properties (Product) | *(empty)* | JSON object merged into the Product node |
-| Enable ProductGroup + hasVariant | No | Emits `ProductGroup` with `variesBy` on color / size / material |
-| Enable Pros/Cons | No | Emits `positiveNotes` / `negativeNotes` ItemLists |
-| Pros Attribute Code | `product_pros` | Textarea attribute for pros |
-| Cons Attribute Code | `product_cons` | Textarea attribute for cons |
-| Enable Energy Efficiency Label (EU) | No | Emits `hasEnergyConsumptionDetails` |
-| Energy Class Attribute Code | `energy_class` | Attribute for grades A–G |
-| Enable Product Certifications | No | Emits `hasCertification` |
-| Certification Attribute Code | `certifications` | Textarea, one `Authority \| Name \| ID` per line |
-| Enable Sale Event / Special Price Details | Yes | Emits `priceSpecification` with `validFrom` / `validThrough` |
-| Seller Business Type | Organization | `Organization` / `LocalBusiness` / `Store` / `OnlineStore` |
-| Default Brand Name | *(empty)* | Fallback when product has no brand attribute |
-| Return Policy Type | Refund | `refund` / `exchange` (as `additionalProperty`) |
-| Return Fees | `free` | `free` / `ReturnFeesCustomerResponsibility` / `ReturnShippingFees` / `RestockingFees` |
-| Limited Stock Threshold | 5 | Below this → `LimitedAvailability` instead of `InStock` |
+| Setting | Group | Default | Description |
+|---|---|---|---|
+| Enable Product | Structured Data | Yes | Emits Product + Offer on product pages |
+| Enable Breadcrumb | Structured Data | Yes | Emits BreadcrumbList on all pages |
+| Enable Organization | Structured Data | Yes | Emits Organization on every page |
+| Enable WebSite / SiteLinks | Structured Data | Yes | Emits WebSite + SearchAction |
+| Enable Auto-Extracted FAQ Schema | Structured Data | Yes | Scans descriptions for heading/paragraph Q&A pairs |
+| Enable Article | Structured Data | Yes | Emits Article on blog-like CMS pages |
+| Enable Review | Structured Data | Yes | Emits Review + AggregateRating on product pages with reviews |
+| Enable VideoObject | Structured Data | Yes | Emits VideoObject for external-video gallery entries |
+| Enable Brand | Structured Data | Yes | Emits Brand node using the brand attribute |
+| Enable Seller | Structured Data | Yes | Emits Seller merged into the Organization node |
+| Configurable: Multi-Offer | Structured Data | Yes | Emits one Offer per configurable child SKU |
+| Remove Native Magento JSON-LD Markup | Structured Data | Yes | Strips Magento's native ld+json on product and breadcrumb blocks |
+| Return Policy Days | Structured Data | 30 | merchantReturnDays - set to 0 to disable MerchantReturnPolicy |
+| Brand Attribute Code | Structured Data | manufacturer | Product attribute used for Brand name |
+| GTIN Attribute Code | Structured Data | (empty) | Product attribute for gtin/gtin13/ean - leave empty to omit |
+| MPN Attribute Code | Structured Data | (empty) | Product attribute for Manufacturer Part Number - leave empty to omit |
+| Enable Product List Schema (ItemList) | Structured Data | Yes | Emits ItemList on category pages |
+| Accepted Payment Methods | Structured Data | (empty) | One method per line (Visa, Mastercard, PayPal) |
+| Delivery Methods | Structured Data | (empty) | One method per line (Standard Shipping, Express) |
+| Product Condition | Structured Data | New | Default itemCondition for all product Offers |
+| Default Price Valid Until | Structured Data | (empty) | YYYY-MM-DD fallback when product has no special_to_date |
+| Custom JSON-LD Properties (Product) | Structured Data | (empty) | JSON object deep-merged into the Product node on every PDP |
+| Enable ProductGroup + hasVariant | Structured Data | No | Emits ProductGroup with variesBy for configurable products |
+| Enable Pros/Cons | Structured Data | No | Emits positiveNotes / negativeNotes ItemLists |
+| Pros Attribute Code | Structured Data | product_pros | Textarea attribute holding pros, one per line |
+| Cons Attribute Code | Structured Data | product_cons | Textarea attribute holding cons, one per line |
+| Enable Energy Efficiency Label (EU) | Structured Data | No | Emits hasEnergyConsumptionDetails with grades A-G |
+| Energy Class Attribute Code | Structured Data | energy_class | Product attribute for energy grade |
+| Enable Product Certifications | Structured Data | No | Emits hasCertification from a textarea attribute |
+| Certification Attribute Code | Structured Data | certifications | Textarea, one Authority / Name / ID per line |
+| Enable Sale Event / Special Price Details | Structured Data | Yes | Emits priceSpecification with validFrom and validThrough |
+| Seller Business Type | Structured Data | Organization | Organization, LocalBusiness, Store, or OnlineStore |
+| Default Brand Name | Structured Data | (empty) | Fallback brand when product has no brand attribute |
+| Return Policy Type | Structured Data | Refund | Refund or exchange |
+| Return Fees | Structured Data | free | free or a custom description |
+| Limited Stock Threshold | Structured Data | 5 | Qty below this emits LimitedAvailability instead of InStock |
 
 ### Breadcrumbs
 
-| Setting | Default | What it controls |
-|---|---|---|
-| Enable Breadcrumb Priority | No | When Yes, product breadcrumbs use category priority weights |
-| Breadcrumb Format | Longest (deepest) | `shortest` / `longest` — tiebreaker when priorities are equal |
+| Setting | Group | Default | Description |
+|---|---|---|---|
+| Enable Breadcrumb Priority | Breadcrumbs | No | When Yes, product breadcrumbs use category priority weights |
+| Breadcrumb Format | Breadcrumbs | Longest (deepest) | Tiebreaker when priorities are equal: shortest or longest path |
 
-Every field is `[store view]`-scoped.
-
-After any change, flush caches:
+Every field is store view scoped. After any change, flush caches:
 
 ```bash
 bin/magento cache:flush config full_page
@@ -475,345 +318,121 @@ bin/magento cache:flush config full_page
 
 ---
 
-## Quick Test — URLs You Can Hit Right Now
+## How It Works
 
-Every URL below returns HTML with exactly one `<script type="application/ld+json" data-panth-seo="jsonld">…</script>` block. Substitute your own host for the domain.
-
-### 1. View the JSON-LD in a browser
-
-Open any URL → right-click → View Page Source → Ctrl-F for `application/ld+json`. The block carries the full `@graph`.
-
-**Product types — Hyva + Luma test stores**
-
-| Type | Hyva | Luma |
-|---|---|---|
-| Simple | `https://your-store.test/compete-track-tote.html` | `https://luma.your-store.test/compete-track-tote.html` |
-| Configurable | `https://your-store.test/chaz-kangeroo-hoodie.html` | `https://luma.your-store.test/chaz-kangeroo-hoodie.html` |
-| Bundle | `https://your-store.test/sprite-yoga-companion-kit.html` | `https://luma.your-store.test/sprite-yoga-companion-kit.html` |
-| Grouped | `https://your-store.test/set-of-sprite-yoga-straps.html` | `https://luma.your-store.test/set-of-sprite-yoga-straps.html` |
-
-**Other page types**
-
-| Page | Hyva | Luma |
-|---|---|---|
-| Home | `https://your-store.test/` | `https://luma.your-store.test/` |
-| Category (ItemList) | `https://your-store.test/gear/bags.html` | `https://luma.your-store.test/gear/bags.html` |
-| CMS | `https://your-store.test/about-us` | `https://luma.your-store.test/about-us` |
-| 404 | `https://your-store.test/no-route` | `https://luma.your-store.test/no-route` |
-| Search | `https://your-store.test/catalogsearch/result/?q=bag` | `https://luma.your-store.test/catalogsearch/result/?q=bag` |
-
-### 2. Pretty-print from the terminal
-
-```bash
-curl -ks https://your-store.test/chaz-kangeroo-hoodie.html \
-  | perl -ne 'BEGIN{$/=undef} while (/<script type="application\/ld\+json"[^>]*>(.*?)<\/script>/gs) { print "$1\n" }' \
-  | python3 -m json.tool
-```
-
-### 3. One-shot type summary across every page
-
-```bash
-for url in / /compete-track-tote.html /chaz-kangeroo-hoodie.html \
-           /sprite-yoga-companion-kit.html /set-of-sprite-yoga-straps.html \
-           /gear/bags.html /about-us /no-route; do
-  types=$(curl -ks "https://your-store.test$url" \
-    | perl -ne 'BEGIN{$/=undef} while (/<script type="application\/ld\+json"[^>]*>(.*?)<\/script>/gs) { print "$1\n" }' \
-    | python3 -c 'import json,sys; d=json.loads(sys.stdin.read()); print(",".join(n.get("@type","?") for n in d.get("@graph",[d])))')
-  printf "  %-40s %s\n" "$url" "$types"
-done
-```
-
-Expected output on a stock sample-data install:
+The module follows a pipeline pattern: admin config feeds a set of providers, an aggregator collects and merges their output, and the head block writes one JSON-LD script tag.
 
 ```
-  /                                        Organization,WebSite
-  /compete-track-tote.html                 Organization,WebSite,BreadcrumbList,Product,Review,MerchantReturnPolicy
-  /chaz-kangeroo-hoodie.html               Organization,WebSite,BreadcrumbList,Product,MerchantReturnPolicy
-  /sprite-yoga-companion-kit.html          Organization,WebSite,BreadcrumbList,Product,MerchantReturnPolicy
-  /set-of-sprite-yoga-straps.html          Organization,WebSite,BreadcrumbList,Product,MerchantReturnPolicy
-  /gear/bags.html                          Organization,WebSite,BreadcrumbList,ItemList
-  /about-us                                Organization,WebSite
-  /no-route                                Organization
+Admin -> Stores -> Configuration -> Panth Extensions -> Structured Data
+        (toggles, attribute codes, social URLs, organization fields)
+                        |
+                Helper\Config reads every field
+                        |
+        Aggregator (pipeline of 24 providers)
+          OrganizationProvider  -> Organization
+          WebsiteProvider       -> WebSite + SearchAction
+          BreadcrumbProvider    -> BreadcrumbList
+          ProductProvider       -> Product + scalar Offer extras
+          FaqExtractor          -> FAQPage (if Q&A pairs found)
+          ReviewProvider        -> Review + AggregateRating
+          VideoProvider         -> VideoObject (external-video entries)
+          CmsArticleProvider    -> Article (blog-like CMS pages)
+          ReturnPolicyProvider  -> MerchantReturnPolicy
+          BrandProvider         -> Brand
+          ProductListProvider   -> ItemList (category pages)
+          PaymentMethodProvider -> Offer (acceptedPaymentMethod)
+          DeliveryMethodProvider-> Offer (shippingDetails)
+          MultiRegionShipping   -> Offer (multi-region shippingDetails)
+          ConfigurableOffer     -> Product -> AggregateOffer
+          GroupedOffer          -> Product -> AggregateOffer (grouped)
+          BundleOffer           -> Product -> AggregateOffer (bundle)
+          CustomProperties      -> Product + custom JSON
+          EnergyLabel           -> Product + hasEnergyConsumption
+          Certification         -> Product + hasCertification
+          SaleEvent             -> Product + priceSpecification
+          ProductGroup          -> ProductGroup + hasVariant
+          ProsCons              -> Product + positiveNotes/negativeNotes
+          SellerProvider        -> Organization (merged)
+                        |
+          Deep-merge by @id, deduplicate
+                        |
+        <script type="application/ld+json" data-panth-seo="jsonld">
+          { "@context": "https://schema.org", "@graph": [...] }
+        </script>
+
+        RemoveNativeMarkupPlugin strips Magento's native ld+json
+        and microdata from product.info.main, breadcrumbs,
+        product.price.final
 ```
 
-### 4. Browser DevTools one-liner
+The aggregator does six things for each render:
 
-Paste in Chrome / Firefox / Safari DevTools console on any page:
-
-```js
-JSON.parse(document.querySelector('script[data-panth-seo="jsonld"]').textContent)
-  ['@graph'].forEach(n => console.log(n['@type'], '→', n.name || n.headline || n['@id']))
-```
+1. **Applicability check** - each provider exposes `isApplicable()`. Product providers return false on CMS pages, FAQExtractor defers to `Panth_Faq` when that module is present, etc.
+2. **Config gate** - reads the Yes/No admin toggle for each provider code. Disabled providers are skipped.
+3. **Node collection** - calls `getJsonLd()` on each applicable, enabled provider.
+4. **Deep-merge by @id** - two nodes with the same `@id` are merged key by key. Scalars from later providers win, arrays recurse, new keys are added. This is how `ProductProvider` and `ConfigurableOfferProvider` both contribute to one coherent Product node.
+5. **Document shape** - one node in `@graph` gets inlined under `@context`; multiple nodes get wrapped in `@graph`.
+6. **XSS safety** - every `</` in the JSON is replaced with `<\/`.
 
 ---
 
-## How to Validate with Google Search Console (Step by Step)
+## Schema.org Nodes Emitted
 
-Google's Rich Results Test is the authoritative validator — it's what determines whether your pages get rich cards in SERPs. Here's the full flow.
-
-### Prerequisite: your site must be publicly reachable
-
-Google's crawler can't reach `localhost`, `*.test`, VPN-internal, or intranet URLs. If you're testing locally, expose the site through a tunnel first:
-
-```bash
-# Option A: Cloudflare Tunnel (free, no signup for temporary tunnels)
-cloudflared tunnel --url https://your-store.test
-
-# Option B: ngrok (free tier fine for testing)
-ngrok http https://your-store.test
-```
-
-Either gives you a public `https://xxxx.trycloudflare.com/` or `https://xxxx.ngrok.io/` URL. Use that in every validator below.
-
-### Step 1 — Google Rich Results Test
-
-1. Open [**search.google.com/test/rich-results**](https://search.google.com/test/rich-results).
-2. Paste your full product URL (e.g. `https://xxxx.trycloudflare.com/compete-track-tote.html`).
-3. Click **Test URL**. Google fetches the page.
-4. Once it finishes, you'll see one or more "Detected items" — **Products**, **Breadcrumbs**, **Reviews**, **Merchant listings**, etc.
-5. Click each item to expand. The left pane shows a live SERP preview card with your product image, price, rating stars, and availability.
-6. Any errors or warnings show at the top of each item panel. **Errors** block rich results; **warnings** are suggestions.
-
-**What to expect on a working product page:**
-
-- ✅ Products — 1 item detected (valid)
-- ✅ Breadcrumbs — 1 item detected (valid)
-- ✅ Merchant listings — 1 item detected (valid) [if MerchantReturnPolicy enabled]
-- ✅ Reviews — N items detected [if product has reviews]
-
-### Step 2 — Submit your domain to Google Search Console
-
-To track rich-result performance over time, add the whole site:
-
-1. Open [**search.google.com/search-console**](https://search.google.com/search-console).
-2. Click **Add property**.
-3. Choose **Domain** (covers all subdomains + http/https) or **URL prefix** (for a specific scheme + host).
-4. Follow the verification flow — DNS TXT record for a domain property, or HTML file upload / meta tag / Google Analytics / Google Tag Manager for URL prefix.
-5. Once verified you'll see the **Overview** dashboard within 24 hours.
-
-### Step 3 — Submit your sitemap
-
-If you have `Panth_HtmlSitemap` or any other sitemap generator, submit it:
-
-1. In Search Console → **Sitemaps** (left sidebar).
-2. Paste the sitemap URL (e.g. `https://your-store.com/sitemap.xml`).
-3. Click **Submit**. Google will crawl every URL in the sitemap and start detecting structured data.
-
-### Step 4 — Monitor rich-result eligibility
-
-After Google re-crawls (typically 1–7 days):
-
-1. In Search Console → **Enhancements** (left sidebar).
-2. You'll see separate reports for every rich-result type your site emits:
-   - **Products** (from `Product` schema)
-   - **Breadcrumbs** (from `BreadcrumbList` schema)
-   - **Review snippets** (from `Review` + `AggregateRating`)
-   - **Merchant listings** (from `Product` + `Offer` with price + availability + merchant return policy)
-   - **Sitelinks searchbox** (from `WebSite` + `SearchAction`)
-   - **FAQ** (from `FAQPage` schema)
-   - **Logo** (from `Organization` + `logo`)
-3. Each report shows **Valid** / **Valid with warnings** / **Invalid** URLs. Invalid URLs are the ones to fix first.
-
-### Step 5 — Fix any invalid items
-
-For each invalid URL:
-
-1. Click the error type (e.g. "Missing field 'priceValidUntil'").
-2. Review the list of affected URLs.
-3. Open the URL in the Rich Results Test (Step 1) to see the exact problem.
-4. Fix the admin config — e.g. populate **Default Price Valid Until** or the missing brand attribute.
-5. Flush caches (`bin/magento cache:flush config full_page`).
-6. In Search Console, click **Validate fix** on the error. Google will re-crawl within days.
-
-### Step 6 — Request indexing (optional, speeds things up)
-
-For a single URL:
-
-1. In Search Console → **URL Inspection** (top search bar).
-2. Paste a product URL.
-3. Click **Request Indexing**.
-4. Google will prioritize crawling that URL. Repeat for 10-20 of your most important pages.
-
-### Step 7 — Confirm rich results in SERP
-
-After Google re-indexes, search for your product in `site:your-store.com` mode:
-
-```
-site:your-store.com compete track tote
-```
-
-Rich snippets (price, stars, availability badges, breadcrumb path above the title) should appear. Full rollout across all indexed pages takes 2-8 weeks.
-
----
-
-## Other Validators
-
-Complement Google's Rich Results Test with these before shipping:
-
-| Tool | What it checks | URL |
-|---|---|---|
-| **Schema.org Validator** | Stricter than Google — every schema.org issue, nested or not | [validator.schema.org](https://validator.schema.org/) |
-| **Facebook Sharing Debugger** | Open Graph + schema.org for Facebook preview cards | [developers.facebook.com/tools/debug](https://developers.facebook.com/tools/debug/) |
-| **LinkedIn Post Inspector** | Schema preview for LinkedIn shares | [linkedin.com/post-inspector](https://www.linkedin.com/post-inspector/) |
-| **Bing Webmaster Tools — Markup Validator** | Bing's equivalent of Rich Results Test | [bing.com/webmasters/tools/markup-validator](https://www.bing.com/webmasters/tools/markup-validator) |
-| **opengraph.xyz** | Multi-platform preview (Facebook, Twitter/X, LinkedIn, WhatsApp, Slack, iMessage, Discord) | [opengraph.xyz](https://www.opengraph.xyz/) |
-| **Merkle Schema Markup Validator** | Batch-check multiple URLs | [technicalseo.com/tools/schema-markup-generator](https://technicalseo.com/tools/schema-markup-generator) |
-| **Yandex Structured Data Validator** | Yandex-specific schema rules | [webmaster.yandex.com/tools/microtest](https://webmaster.yandex.com/tools/microtest/) |
-
----
-
-## Per-Provider Deep Dive
-
-### `ProductProvider`
-
-- Runs on: product pages (`current_product` in registry).
-- Emits: `Product` with `@id = {product_url}#product`, full image list (from Magento Image helper + media gallery), description (meta_description → short_description → description, ≤5000 chars), brand (via `Brand`), audience (via `PeopleAudience.audienceType` from `gender` attribute), scalar `Offer` for simple products or offer-level extras (itemCondition, seller, priceValidUntil, shippingDetails, hasMerchantReturnPolicy) for variant types, `AggregateRating` from Magento's review summary, ISO 8601 `dateModified` / `datePublished`.
-- Availability logic: Discontinued (status=disabled or visibility=not_visible) → PreOrder (news_from_date in future) → BackOrder (backorders > 0) → OutOfStock → LimitedAvailability (qty < threshold) → InStock.
-- Variant types (`configurable` / `bundle` / `grouped`) skip scalar `price` / `priceCurrency` / `availability` / `url` — the specialised provider contributes those via deep-merge.
-
-### `ConfigurableOfferProvider`, `BundleOfferProvider`, `GroupedOfferProvider`
-
-- Run on: configurable, bundle, grouped products respectively.
-- Emit: a `Product #product` contribution containing an `AggregateOffer` with `lowPrice` / `highPrice` / `offerCount` and for Configurable / Grouped a child `offers` array of per-variant `Offer` nodes.
-- Bundle dynamic pricing pulls min/max from the bundle option price range. Bundle fixed pricing emits a scalar `Offer`.
-- All three merge into the same `#product` @id so the result is one coherent Product node.
-
-### `OrganizationProvider` + `SellerProvider`
-
-- Run on: every page (Organization) / product pages (Seller).
-- Emit: `Organization #organization` with full identity details.
-- `SellerProvider` uses the same `@id = #organization` by default; when `business_type = LocalBusiness / Store / OnlineStore` the merged `@type` is promoted to the more specific class.
-- `sameAs` combines 7 dedicated social-profile fields with a free-form textarea.
-
-### `BreadcrumbProvider`
-
-- Runs on: any page with a clear entity (product / category / CMS).
-- For products: picks the primary category from the product's category set, honoring admin-configured priority weights when `enable_breadcrumb_priority = Yes`, else tiebreaker on depth (longest / shortest).
-- Builds full hierarchy: Home → Category → Subcategory → Product (4 levels on most PDPs).
-
-### `ProductListProvider`
-
-- Runs on: category pages only.
-- Emits: `ItemList` with one `ListItem` per visible product in the current category view, preserving pagination order.
-
-### `ReviewProvider`
-
-- Runs on: product pages with reviews enabled (`catalog/review/active`).
-- Emits: up to 5 most-recent approved `Review` nodes with ISO 8601 `datePublished`, scaled 1-5 rating from Magento's 0-100 percent vote aggregate.
-- Defers to `Panth_Testimonials` on its own routes.
-
-### `WebsiteProvider`
-
-- Runs on: every page.
-- Emits: `WebSite #website` with `SearchAction` pointing at `{store_url}catalogsearch/result/?q={search_term_string}` — enables Google Sitelinks Search Box.
-
-### `FaqExtractor`
-
-- Runs on: any page with a description containing heading/paragraph Q&A pairs.
-- Parser: `<h2>…?</h2><p>…</p>` and `<h3>…?</h3><p>…</p>`.
-- Needs ≥2 Q&A pairs; defers to `Panth_Faq` on its routes.
-
-### `CmsArticleProvider`
-
-- Runs on: CMS pages whose identifier starts with `blog/`, `news/`, `articles/` or whose meta keywords contain `article`.
-- Emits: `Article` with headline / description / mainEntityOfPage / url / author / publisher refs + ISO 8601 `datePublished` / `dateModified` + up to 5000 chars of articleBody.
-
-### `ReturnPolicyProvider`
-
-- Runs on: product pages when `return_policy_days > 0`.
-- Emits: `MerchantReturnPolicy` with `applicableCountry` from store config, `merchantReturnDays` (int), `returnMethod`, `returnFees` (mapped to `ReturnFeesEnumeration` URL).
-
-### `VideoProvider`
-
-- Runs on: product pages with media gallery entries of type `external-video`.
-- Emits: `VideoObject` for each video (YouTube / Vimeo).
-
-### Specialist providers
-
-- `CertificationProvider` — `hasCertification` from a textarea attribute.
-- `EnergyLabelProvider` — `hasEnergyConsumptionDetails` with grade A–G.
-- `ProsConsProvider` — `positiveNotes` / `negativeNotes` ItemLists.
-- `SaleEventProvider` — `priceSpecification` (UnitPriceSpecification) with validFrom/validThrough when special price is active.
-- `DeliveryMethodProvider` / `PaymentMethodProvider` / `MultiRegionShippingProvider` — Offer extensions for shipping + payment.
-- `ProductGroupProvider` — `ProductGroup` + `hasVariant` + `variesBy` (opt-in; richer variant modelling).
-- `CustomPropertiesProvider` — admin-editable JSON object deep-merged into the Product node for anything outside the built-in schemas.
-- `BrandProvider` — standalone Brand node alongside the inline `Product.brand`.
-
----
-
-## Troubleshooting
-
-| Issue | Cause | Resolution |
-|---|---|---|
-| No JSON-LD on any page | FPC cache from before install | `bin/magento cache:flush config full_page` |
-| JSON-LD missing on specific page type | Provider's `isApplicable()` returned false | Check the provider's rules — e.g. `ItemList` needs a category with products; `FAQPage` needs ≥2 Q&A pairs |
-| Duplicate Product schema in SERP | `remove_native_markup = No` | Flip to Yes + flush cache |
-| `Breadcrumbs` only has 2 items (Home → Product) on PDPs with categories | Old versions (pre-1.0.1) had a missing Config constant | Upgrade to ≥ 1.0.1 |
-| Multi-select `gender` or `brand` attr silently drops entire Product schema | Pre-1.0.2 `(string)` cast on array return | Upgrade to ≥ 1.0.2 |
-| Configurable / bundle / grouped `offers` has leftover `price` key | Pre-1.0.2 ProductProvider didn't gate scalar pricing for variant types | Upgrade to ≥ 1.0.2 |
-| Google Rich Results Test: "Either 'offers', 'review', or 'aggregateRating' should be specified" | Product has `$0.00` final price or is out-of-stock with stock-based logic | Set a price; check availability logic |
-| Google: "Missing field 'priceValidUntil'" | No `special_to_date` and admin default empty | Set **Default Price Valid Until** to a future `YYYY-MM-DD` (module auto-falls-back to +1 year when both are empty) |
-| Google: "Invalid URL in field 'image'" | Product has no image and store logo is a CDN URL that 404s | Upload a valid product image or store logo |
-| Google: "Missing field 'returnFees'" | Pre-1.0.2 emitted free-text `returnFees` that didn't match `ReturnFeesEnumeration` | Upgrade to ≥ 1.0.2 |
-| FAQPage not detected | Descriptions use a non-standard Q&A HTML shape | Use `<h2>Question?</h2><p>Answer.</p>` — needs ≥2 pairs |
-| `SearchAction` points at wrong URL | Store base URL misconfigured | Fix **Stores → Configuration → Web → Base URLs** |
-| Organization name renders as "Default Store View" | Store Information → Store Name not set | Set it under **Stores → Configuration → General → Store Information** |
+| Node | When |
+|---|---|
+| `Organization` | Every page |
+| `WebSite` + `SearchAction` | Every page (toggle) |
+| `BreadcrumbList` | Product, category, CMS pages with 2+ items |
+| `Product` + `Offer` | Simple, virtual, downloadable product pages |
+| `Product` + `AggregateOffer` | Configurable, bundle, grouped product pages |
+| `Review` + `AggregateRating` | Product pages with approved reviews |
+| `MerchantReturnPolicy` | Product pages when return_policy_days is above 0 |
+| `FAQPage` | Any page with 2 or more Q&A pairs in description |
+| `Article` | Blog-like CMS pages |
+| `VideoObject` | Product pages with external-video gallery entries |
+| `ItemList` | Category pages with products |
+| `Brand` | Product pages when brand attribute has a value |
+| `ProductGroup` + `hasVariant` | Configurable products (opt-in) |
 
 ---
 
 ## FAQ
 
-### Will this slow down my storefront?
+### Does it work on Hyva themes?
 
-No. The head block is `cacheable="true"` so the full JSON-LD payload is baked into full-page cache. Providers only run on uncached renders; cached hits serve the pre-rendered `<script>` tag with zero PHP evaluation.
+Yes. The head block attaches through `head.additional` in standard Magento layout XML. There is no JS, RequireJS, or `x-magento-init` involved. The same PHP-rendered `<script>` tag goes out on Hyva, Luma, Breeze, and any other Magento theme.
 
-### Is it GDPR compliant?
+### Will the JSON-LD slow down my store?
 
-The module only emits data already public on your storefront — product details, store identity, and aggregate review stats. It does not render personally identifiable data in structured-data form.
+No. The head block is marked `cacheable="true"` so FPC bakes the full JSON-LD payload alongside the rest of the `<head>`. Providers only execute on uncached renders; cached page hits serve the pre-rendered script tag with zero PHP overhead.
 
-### Can I disable individual schemas?
+### Can I turn off individual schema types?
 
-Yes. Every provider has a **Yes/No** toggle under **Stores → Configuration → Panth Extensions → Structured Data** — Product, Breadcrumb, Organization, WebSite, FAQ, Article, Review, VideoObject, Brand, Seller, Product List (ItemList), ProductGroup, Pros/Cons, Energy Label, Certifications, Sale Event, Remove Native Markup.
+Yes. Every provider has its own Yes/No toggle under **Stores -> Configuration -> Panth Extensions -> Structured Data**. You can disable Product, Breadcrumb, Organization, WebSite, FAQ, Article, Review, VideoObject, Brand, Seller, ItemList, ProductGroup, Pros/Cons, Energy Label, Certifications, Sale Event, and native markup removal independently.
 
-### Does it work with Hyva?
+### Which product types are supported?
 
-Yes. No JS, no RequireJS, no `x-magento-init`. The head block attaches via `view/frontend/layout/default.xml` to the `head.additional` container which every Magento theme exposes. Identical output on Hyva, Luma, Breeze, and any custom theme.
+Simple, configurable, bundle (dynamic and fixed price), grouped, virtual, and downloadable products all produce correct structured data. Configurable and grouped products each emit one child `Offer` per variant or grouped SKU.
 
-### Does it support multi-store / multi-language?
+### Does it remove Magento's own JSON-LD?
 
-Yes. Every admin field is `[store view]`-scoped, so different store views can ship different Organization data, social profiles, toggles, and attribute codes. URLs in the JSON-LD are scoped to the current store's base URL.
+Yes, when the "Remove Native Magento JSON-LD Markup" toggle is on (default Yes). A plugin on `AbstractBlock::afterToHtml` removes Magento's built-in `application/ld+json` scripts from `product.info.main`, `breadcrumbs`, and `product.price.final`. It also strips `itemprop`, `itemscope`, and `itemtype` microdata attributes from those blocks.
 
-### Can I customize the emitted JSON?
+### Does it work with multi-store setups?
 
-Three ways, in increasing order of effort:
+Yes. Every admin field is store view scoped, so each store view can have its own Organization data, social profiles, toggles, attribute codes, and language-specific content.
 
-1. **Custom JSON-LD Properties (Product)** — admin field that accepts a JSON object; merged into the Product node on every PDP.
-2. **Per-product EAV attributes** — the resolver reads product attributes like `meta_description`, `short_description`, `manufacturer`, `gender` — populate those for per-product overrides.
-3. **Custom provider class** — implement `StructuredDataProviderInterface`, register in `di.xml` under the `providers` argument of `Panth\StructuredData\Model\StructuredData\Composite` (and `Aggregator`). The aggregator will pick it up automatically.
+### Can I add custom schema properties?
 
-### Can I override a provider's output?
+Yes, three ways. First, use the "Custom JSON-LD Properties (Product)" admin field, which accepts a JSON object that gets deep-merged into every Product node. Second, populate standard Magento product attributes like `manufacturer`, `gender`, or `meta_description` for per-product overrides. Third, write a custom provider class implementing `StructuredDataProviderInterface` and register it in `di.xml`.
 
-Yes — declare a virtualType in your own module's `di.xml` with the same class name as the provider you want to replace, or use a preference on `Panth\StructuredData\Api\StructuredDataProviderInterface` with a type constraint.
+### Does it work alongside Panth_AdvancedSEO or Panth_Faq?
 
-### Does it interact with `Panth_AdvancedSEO`, `Panth_Faq`, `Panth_Testimonials`?
+Yes. `FaqExtractor` defers to `Panth_Faq` on its own routes when that module is installed. `ReviewProvider` defers to `Panth_Testimonials` on the testimonials route. `Panth_AdvancedSEO` shares the master switch when present.
 
-Yes, friendly:
+### Is Panth Core required?
 
-- `Panth_AdvancedSEO`: shares the `panth_seo/general/enabled` master switch when installed; defaults are set locally so standalone installs still work.
-- `Panth_Faq`: `FaqExtractor` defers to `Panth_Faq` on its own routes and when the `faq.schema` block is mounted and producing data.
-- `Panth_Testimonials`: `ReviewProvider` defers on the `testimonials` route when the module is enabled.
-
-### Is `Panth_Core` required?
-
-Yes. `mage2kishan/module-core` is a required dependency and is pulled in automatically by Composer.
-
-### Does it emit `itemprop` / microdata?
-
-No — only JSON-LD. Microdata is legacy and mixing the two often produces duplicate-structured-data warnings in Search Console. The `RemoveNativeMarkupPlugin` actively strips native Magento microdata from the target blocks.
-
-### What's the smallest Magento version supported?
-
-2.4.4. For earlier Magento versions, contact [Panth Infotech](https://kishansavaliya.com/get-quote) — we can backport on request.
+Yes. `mage2kishan/module-core` is a free required dependency that Composer pulls in for you automatically.
 
 ---
 
@@ -821,6 +440,7 @@ No — only JSON-LD. Microdata is legacy and mixing the two often produces dupli
 
 | Channel | Contact |
 |---|---|
+| Product Page | [kishansavaliya.com/magento-2-structured-data.html](https://kishansavaliya.com/magento-2-structured-data.html) |
 | Email | kishansavaliyakb@gmail.com |
 | Website | [kishansavaliya.com](https://kishansavaliya.com) |
 | WhatsApp | +91 84012 70422 |
@@ -830,9 +450,9 @@ No — only JSON-LD. Microdata is legacy and mixing the two often produces dupli
 
 Response time: 1-2 business days.
 
-### 💼 Need Custom Magento Development?
+### Need Custom Magento Development?
 
-Looking for **custom Magento module development**, **Hyva theme customization**, **store migrations**, or **performance optimization**? Get a free quote in 24 hours:
+Looking for **custom Magento module development**, **Hyva theme work**, **store migrations**, or **performance tuning**? Get a free quote in 24 hours:
 
 <p align="center">
   <a href="https://kishansavaliya.com/get-quote">
@@ -849,60 +469,46 @@ Looking for **custom Magento module development**, **Hyva theme customization**,
     <img src="https://img.shields.io/badge/Visit-Panth%20Infotech%20Agency-14a800?style=for-the-badge&logo=upwork&logoColor=white" alt="Visit Agency" />
   </a>
   &nbsp;&nbsp;
-  <a href="https://kishansavaliya.com">
-    <img src="https://img.shields.io/badge/Visit%20Website-kishansavaliya.com-0D9488?style=for-the-badge" alt="Visit Website" />
+  <a href="https://kishansavaliya.com/magento-2-structured-data.html">
+    <img src="https://img.shields.io/badge/View%20Product%20Page-magento--2--structured--data-0D9488?style=for-the-badge" alt="View Product Page" />
   </a>
 </p>
-
-**Specializations:**
-
-- 🛒 **Magento 2 Module Development** — custom extensions following MEQP standards
-- 🎨 **Hyva Theme Development** — Alpine.js + Tailwind CSS, lightning-fast storefronts
-- 🖌️ **Luma Theme Customization** — pixel-perfect designs, responsive layouts
-- ⚡ **Performance Optimization** — Core Web Vitals, page speed, caching strategies
-- 🔍 **Magento SEO** — structured data, hreflang, sitemaps, AI-generated meta
-- 🛍️ **Checkout Optimization** — one-page checkout, conversion rate optimization
-- 🚀 **M1 to M2 Migrations** — data migration, custom feature porting
-- ☁️ **Adobe Commerce Cloud** — deployment, CI/CD, performance tuning
-- 🔌 **Third-party Integrations** — payment gateways, ERP, CRM, marketing tools
-
----
-
-## License
-
-Panth Structured Data is licensed under a proprietary license — see `LICENSE.txt`. One license per Magento installation.
 
 ---
 
 ## About Panth Infotech
 
-Built and maintained by **Kishan Savaliya** — [kishansavaliya.com](https://kishansavaliya.com) — a **Top Rated Plus** Magento developer on Upwork with 10+ years of eCommerce experience.
+Built and maintained by **Kishan Savaliya** ([kishansavaliya.com](https://kishansavaliya.com)), a **Top Rated Plus** Magento developer on Upwork with 10+ years of eCommerce experience.
 
-**Panth Infotech** is a Magento 2 development agency specializing in high-quality, security-focused extensions and themes for both Hyva and Luma storefronts. Our extension suite covers SEO, performance, checkout, product presentation, customer engagement, and store management — over 34 modules built to MEQP standards and tested across Magento 2.4.4 to 2.4.8.
+**Panth Infotech** is a Magento 2 development agency that builds high quality, security focused extensions and themes for both Hyva and Luma storefronts. The extension suite covers SEO, performance, checkout, product presentation, customer engagement, and store management, with each module built to MEQP standards and tested across Magento 2.4.4 to 2.4.8.
 
-Browse the full extension catalog on the [Adobe Commerce Marketplace](https://commercemarketplace.adobe.com) or [Packagist](https://packagist.org/packages/mage2kishan/).
+Browse the full extension catalog on our [Magento extensions page](https://kishansavaliya.com/magento-extensions.html) or on [Packagist](https://packagist.org/packages/mage2kishan/).
 
-### Quick Links
+---
 
-- 🌐 **Website:** [kishansavaliya.com](https://kishansavaliya.com)
-- 💬 **Get a Quote:** [kishansavaliya.com/get-quote](https://kishansavaliya.com/get-quote)
-- 👨‍💻 **Upwork Profile (Top Rated Plus):** [upwork.com/freelancers/~016dd1767321100e21](https://www.upwork.com/freelancers/~016dd1767321100e21)
-- 🏢 **Upwork Agency:** [upwork.com/agencies/1881421506131960778](https://www.upwork.com/agencies/1881421506131960778/)
-- 📦 **Packagist:** [packagist.org/packages/mage2kishan/module-structured-data](https://packagist.org/packages/mage2kishan/module-structured-data)
-- 🐙 **GitHub:** [github.com/mage2sk/module-structured-data](https://github.com/mage2sk/module-structured-data)
-- 🛒 **Adobe Marketplace:** [commercemarketplace.adobe.com](https://commercemarketplace.adobe.com)
-- 📧 **Email:** kishansavaliyakb@gmail.com
-- 📱 **WhatsApp:** +91 84012 70422
+## Quick Links
+
+| Resource | Link |
+|---|---|
+| **Product Page** | [magento-2-structured-data.html](https://kishansavaliya.com/magento-2-structured-data.html) |
+| **Packagist** | [mage2kishan/module-structured-data](https://packagist.org/packages/mage2kishan/module-structured-data) |
+| **GitHub** | [mage2sk/module-structured-data](https://github.com/mage2sk/module-structured-data) |
+| **Website** | [kishansavaliya.com](https://kishansavaliya.com) |
+| **Free Quote** | [kishansavaliya.com/get-quote](https://kishansavaliya.com/get-quote) |
+| **Upwork (Top Rated Plus)** | [Hire Kishan Savaliya](https://www.upwork.com/freelancers/~016dd1767321100e21) |
+| **Upwork Agency** | [Panth Infotech](https://www.upwork.com/agencies/1881421506131960778/) |
+| **Email** | kishansavaliyakb@gmail.com |
+| **WhatsApp** | +91 84012 70422 |
 
 ---
 
 <p align="center">
-  <strong>Ready to ship Google-validated structured data?</strong><br/>
-  <a href="https://kishansavaliya.com/get-quote">
-    <img src="https://img.shields.io/badge/%F0%9F%9A%80%20Get%20Started%20%E2%86%92-Free%20Quote%20in%2024h-DC2626?style=for-the-badge" alt="Get Started" />
+  <strong>Ready to get Google rich results for your Magento store?</strong><br/>
+  <a href="https://kishansavaliya.com/magento-2-structured-data.html">
+    <img src="https://img.shields.io/badge/%F0%9F%9A%80%20See%20Structured%20Data%20%E2%86%92-Product%20Page%20%26%20Details-DC2626?style=for-the-badge" alt="See Structured Data" />
   </a>
 </p>
 
 ---
 
-**SEO Keywords:** magento 2 structured data, magento 2 json-ld, magento 2 schema.org, magento 2 rich results, magento 2 product schema, magento 2 aggregateoffer, magento 2 breadcrumb schema, magento 2 organization schema, magento 2 review schema, magento 2 faqpage, magento 2 article schema, magento 2 videoobject, magento 2 merchantreturnpolicy, magento 2 product list schema, magento 2 itemlist, magento 2 seo schema, magento 2 google rich results, magento 2 sitelinks searchbox, magento 2 productgroup hasvariant, magento 2 pros cons schema, magento 2 energy label schema, magento 2 certifications schema, magento 2 saleevent schema, magento 2 multi region shipping, magento 2 delivery method schema, magento 2 payment method schema, magento 2 configurable product schema, magento 2 bundle product schema, magento 2 grouped product schema, hyva structured data, hyva json-ld, luma structured data, luma schema, mage2kishan structured data, panth infotech structured data, kishan savaliya magento, magento 2.4.8 structured data, magento 2 PHP 8.4 structured data, hire magento developer upwork, top rated plus magento freelancer, custom magento development, adobe commerce structured data, magento rich snippets, magento seo extension, magento schema generator
+**SEO Keywords:** magento 2 structured data, magento 2 json-ld, magento 2 schema.org, magento 2 rich results, magento 2 product schema, magento 2 breadcrumb schema, magento 2 organization schema, magento 2 aggregateoffer, magento 2 faqpage schema, magento 2 review schema, magento 2 article schema, magento 2 videoobject, magento 2 merchantreturnpolicy, magento 2 itemlist schema, magento 2 seo schema extension, magento 2 google rich results, magento 2 sitelinks searchbox, magento 2 productgroup hasvariant, magento 2 pros cons schema, magento 2 energy label schema, magento 2 certifications schema, magento 2 sale event schema, magento 2 configurable product schema, magento 2 bundle product schema, magento 2 grouped product schema, magento 2 structured data extension, magento 2 rich snippets, magento 2 schema generator, hyva structured data, hyva json-ld extension, luma structured data, luma schema, mage2kishan structured data, panth structured data, panth infotech, kishan savaliya magento, magento 2.4.8 structured data, php 8.4 structured data, hire magento developer, top rated plus upwork, custom magento development, adobe commerce structured data
