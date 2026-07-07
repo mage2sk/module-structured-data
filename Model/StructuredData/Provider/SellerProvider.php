@@ -10,16 +10,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits a seller node (Organization / LocalBusiness / Store / OnlineStore)
- * that can be referenced by Product Offer nodes via `seller: { @id: ... }`.
- *
- * Config fields:
- *  - panth_structured_data/structured_data/business_type  (Organization|LocalBusiness|Store|OnlineStore)
- *
- * Name comes from store name; URL from store base URL.
- * For LocalBusiness / Store, address fields are read from store contact info config.
- */
 class SellerProvider extends AbstractProvider
 {
     private const XML_BUSINESS_TYPE = 'panth_structured_data/structured_data/business_type';
@@ -54,10 +44,7 @@ class SellerProvider extends AbstractProvider
         if ($this->getCurrentProduct() === null) {
             return false;
         }
-        // Seller and Organization share @id=#organization (the Aggregator merges
-        // them into one node). When the admin disables the Organization
-        // provider they expect no Organization-shaped node at all — the Seller
-        // provider must defer to that toggle instead of silently restoring it.
+
         return $this->config->isStructuredDataEnabled('organization');
     }
 
@@ -74,13 +61,6 @@ class SellerProvider extends AbstractProvider
         $businessType = $this->getBusinessType($storeId);
         $name = $this->getStoreName($storeId);
 
-        // Share the Organization @id so the Aggregator deep-merges both
-        // contributions into a single graph node. When business_type is a
-        // specialised subclass (LocalBusiness / Store / OnlineStore) the
-        // scalar @type here overrides the Organization provider's 'Organization'
-        // because array_merge prefers the later provider — which is what we
-        // want: a PDP's Offer.seller still refs #organization and now resolves
-        // to the richer type. Keeps Offer.seller refs stable.
         $node = [
             '@type' => $businessType,
             '@id'   => $baseUrl . '#organization',
@@ -88,7 +68,6 @@ class SellerProvider extends AbstractProvider
             'url'   => $baseUrl,
         ];
 
-        // Add address for physical business types
         if (in_array($businessType, self::TYPES_WITH_ADDRESS, true)) {
             $address = $this->buildAddress($storeId);
             if ($address !== []) {
@@ -130,9 +109,6 @@ class SellerProvider extends AbstractProvider
         }
     }
 
-    /**
-     * @return array<string,string>
-     */
     private function buildAddress(int $storeId): array
     {
         $street1 = (string) ($this->scopeValue(self::XML_STORE_STREET1, $storeId) ?? '');

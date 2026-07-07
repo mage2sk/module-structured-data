@@ -11,15 +11,6 @@ use Magento\Framework\Registry;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * For configurable products, emits an AggregateOffer containing one Offer per
- * visible child variant. Includes price, currency, availability, sku and url
- * for each child. The parent node receives lowPrice / highPrice / offerCount.
- *
- * Only activates when:
- *  - the current product type_id is "configurable"
- *  - config flag `panth_structured_data/structured_data/configurable_multi_offer` is enabled
- */
 class ConfigurableOfferProvider extends AbstractProvider
 {
     public function __construct(
@@ -111,13 +102,9 @@ class ConfigurableOfferProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * @return ProductInterface[]
-     */
     private function getVisibleChildren(ProductInterface $product): array
     {
         try {
-            /** @var ProductInterface[] $children */
             $children = $this->configurableType->getUsedProducts($product);
         } catch (\Throwable) {
             return [];
@@ -126,7 +113,7 @@ class ConfigurableOfferProvider extends AbstractProvider
         $visible = [];
         foreach ($children as $child) {
             $status = (int) $child->getStatus();
-            // Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED = 1
+
             if ($status === 1) {
                 $visible[] = $child;
             }
@@ -135,9 +122,6 @@ class ConfigurableOfferProvider extends AbstractProvider
         return $visible;
     }
 
-    /**
-     * @return array<string,mixed>
-     */
     private function buildChildOffer(ProductInterface $child, string $currency): array
     {
         $finalPrice = $child->getFinalPrice();

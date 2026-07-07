@@ -5,17 +5,8 @@ namespace Panth\StructuredData\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
-/**
- * Source model for the "Product Condition" dropdown in system configuration.
- *
- * Maps to schema.org item-condition enumeration values used in Product
- * structured data (Offer / AggregateOffer).
- */
 class ProductCondition implements OptionSourceInterface
 {
-    /**
-     * @return array<int, array{value: string, label: \Magento\Framework\Phrase}>
-     */
     public function toOptionArray(): array
     {
         return [

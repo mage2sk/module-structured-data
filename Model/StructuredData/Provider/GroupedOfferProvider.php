@@ -11,16 +11,6 @@ use Magento\GroupedProduct\Model\Product\Type\Grouped;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * For grouped products, emits an AggregateOffer containing one Offer per
- * associated simple product. Each Offer includes price, currency, availability,
- * sku, name and url. The parent AggregateOffer receives lowPrice / highPrice /
- * offerCount.
- *
- * Only activates when:
- *  - the current product type_id is "grouped"
- *  - config flag `panth_structured_data/structured_data/configurable_multi_offer` is enabled
- */
 class GroupedOfferProvider extends AbstractProvider
 {
     public function __construct(
@@ -104,13 +94,9 @@ class GroupedOfferProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * @return ProductInterface[]
-     */
     private function getAssociatedProducts(ProductInterface $product): array
     {
         try {
-            /** @var ProductInterface[] $children */
             $children = $this->groupedType->getAssociatedProducts($product);
         } catch (\Throwable) {
             return [];
@@ -119,7 +105,7 @@ class GroupedOfferProvider extends AbstractProvider
         $visible = [];
         foreach ($children as $child) {
             $status = (int) $child->getStatus();
-            // Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED = 1
+
             if ($status === 1) {
                 $visible[] = $child;
             }
@@ -128,9 +114,6 @@ class GroupedOfferProvider extends AbstractProvider
         return $visible;
     }
 
-    /**
-     * @return array<string,mixed>
-     */
     private function buildChildOffer(ProductInterface $child, string $currency): array
     {
         $finalPrice = $child->getFinalPrice();

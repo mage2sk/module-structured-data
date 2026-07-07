@@ -10,19 +10,6 @@ use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 
-/**
- * Creates the `breadcrumbs_priority` EAV attribute on the catalog_category
- * entity. Merchants assign a numeric weight to each category; the breadcrumb
- * plugin uses this weight to choose the optimal category path for products
- * that belong to multiple categories.
- *
- * Attribute details:
- *  - Type: int
- *  - Input: text
- *  - Default: 0
- *  - Group: "Search Engine Optimization"
- *  - Sort order: 70
- */
 class AddBreadcrumbPriorityAttribute implements DataPatchInterface
 {
     public function __construct(
@@ -35,7 +22,6 @@ class AddBreadcrumbPriorityAttribute implements DataPatchInterface
     {
         $this->moduleDataSetup->startSetup();
 
-        /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
 
         if (!$eavSetup->getAttributeId(Category::ENTITY, 'breadcrumbs_priority')) {
@@ -57,7 +43,6 @@ class AddBreadcrumbPriorityAttribute implements DataPatchInterface
             );
         }
 
-        // Add breadcrumbs_priority to ALL category attribute sets
         $this->addCategoryAttributeToAllSets($eavSetup, 'breadcrumbs_priority');
 
         $this->moduleDataSetup->endSetup();
@@ -65,10 +50,6 @@ class AddBreadcrumbPriorityAttribute implements DataPatchInterface
         return $this;
     }
 
-    /**
-     * Assign a category attribute to ALL existing attribute sets under the
-     * "Search Engine Optimization" group (falls back to the default group).
-     */
     private function addCategoryAttributeToAllSets(EavSetup $eavSetup, string $attributeCode): void
     {
         $entityTypeId   = $eavSetup->getEntityTypeId(Category::ENTITY);
@@ -88,17 +69,11 @@ class AddBreadcrumbPriorityAttribute implements DataPatchInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function getDependencies(): array
     {
         return [];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getAliases(): array
     {
         return [];

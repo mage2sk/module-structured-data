@@ -9,22 +9,8 @@ use Magento\Framework\Registry;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits an `ItemList` schema.org node on category pages containing `ListItem`
- * entries for each product in the current product listing.
- *
- * Only active when:
- *  - The request is a category page (current_category is set).
- *  - Config `panth_structured_data/structured_data/enable_product_list_schema` is enabled.
- *
- * The list is capped at 20 items to keep the JSON-LD payload small and avoid
- * excessive processing on large categories.
- */
 class ProductListProvider extends AbstractProvider
 {
-    /**
-     * Maximum number of products to include in the ItemList.
-     */
     private const MAX_ITEMS = 20;
 
     public function __construct(
@@ -75,11 +61,6 @@ class ProductListProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * Build ListItem entries from the current category product collection.
-     *
-     * @return list<array<string,mixed>>
-     */
     private function buildListItems(): array
     {
         try {
@@ -87,10 +68,7 @@ class ProductListProvider extends AbstractProvider
             $collection = $layer->getProductCollection();
             $collection->setPageSize(self::MAX_ITEMS);
             $collection->setCurPage(1);
-            // Force DISTINCT + explicit load under try/catch — the layer
-            // collection can contain duplicate entity_id rows (stock / index
-            // joins on multi-source catalogs), which trips the collection's
-            // "Item with the same ID already exists" guard and 500s the page.
+
             $collection->getSelect()->distinct(true);
             $products = $collection->getItems();
         } catch (\Throwable) {

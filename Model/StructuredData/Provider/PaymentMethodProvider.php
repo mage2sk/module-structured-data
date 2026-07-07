@@ -8,25 +8,8 @@ use Magento\Framework\Registry;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits `acceptedPaymentMethod` values for the Product/Offer node on product pages.
- *
- * Reads a newline-delimited textarea from:
- *   panth_structured_data/structured_data/accepted_payment_methods
- *
- * Each line is mapped to its GoodRelations / schema.org PaymentMethod URI.
- * Unrecognised labels are silently skipped so that only valid schema.org
- * vocabulary reaches the JSON-LD output.
- */
 class PaymentMethodProvider extends AbstractProvider
 {
-    /**
-     * Canonical mapping of human-readable payment labels to GoodRelations URIs.
-     *
-     * Keys are lowercase for case-insensitive matching.
-     *
-     * @var array<string,string>
-     */
     private const PAYMENT_METHOD_MAP = [
         'cash'                       => 'http://purl.org/goodrelations/v1#Cash',
         'cash on delivery'           => 'http://purl.org/goodrelations/v1#COD',
@@ -97,11 +80,6 @@ class PaymentMethodProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * Parse the textarea config and return non-empty, trimmed lines.
-     *
-     * @return list<string>
-     */
     private function getConfiguredMethods(): array
     {
         $raw = $this->config->getAcceptedPaymentMethods();
@@ -125,11 +103,6 @@ class PaymentMethodProvider extends AbstractProvider
         return $methods;
     }
 
-    /**
-     * Map configured labels to schema.org URIs, skipping unknown entries.
-     *
-     * @return list<string>
-     */
     private function resolvePaymentMethodUris(): array
     {
         $uris = [];
@@ -143,7 +116,6 @@ class PaymentMethodProvider extends AbstractProvider
 
             $uri = self::PAYMENT_METHOD_MAP[$key];
 
-            // Deduplicate: multiple labels can map to the same URI.
             if (isset($seen[$uri])) {
                 continue;
             }

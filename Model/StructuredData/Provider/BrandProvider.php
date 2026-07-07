@@ -10,10 +10,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits a schema.org Brand node based on the current product's manufacturer
- * attribute or a store-level default.
- */
 class BrandProvider extends AbstractProvider
 {
     private const XML_PATH_DEFAULT_BRAND = 'panth_structured_data/structured_data/default_brand';

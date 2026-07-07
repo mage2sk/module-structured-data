@@ -3,18 +3,8 @@ declare(strict_types=1);
 
 namespace Panth\StructuredData\Model\StructuredData;
 
-/**
- * A lightweight, dev-mode JSON-LD validator. It enforces a small subset of the
- * schema.org contract rather than the full vocabulary: every node has a
- * `@type`, known types have their required properties, and scalar/url fields
- * look well-formed.
- *
- * The validator is *advisory* — it logs issues via the Aggregator, never
- * blocks rendering.
- */
 class Validator
 {
-    /** @var array<string,array<int,string>> */
     private const REQUIRED = [
         'Product'       => ['name'],
         'Offer'         => ['price', 'priceCurrency'],
@@ -28,10 +18,6 @@ class Validator
         'AggregateRating' => ['ratingValue', 'reviewCount'],
     ];
 
-    /**
-     * @param array<string,mixed> $document
-     * @return array<int,string> Non-empty on failure.
-     */
     public function validate(array $document): array
     {
         $errors = [];

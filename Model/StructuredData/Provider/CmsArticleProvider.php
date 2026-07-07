@@ -3,11 +3,6 @@ declare(strict_types=1);
 
 namespace Panth\StructuredData\Model\StructuredData\Provider;
 
-/**
- * Emits an Article node for CMS pages tagged as articles (heuristic: any CMS
- * page whose identifier begins with "blog/", "news/" or "articles/", or any
- * CMS page with a meta_keywords entry containing "article").
- */
 class CmsArticleProvider extends AbstractProvider
 {
     public function getCode(): string
@@ -66,9 +61,6 @@ class CmsArticleProvider extends AbstractProvider
         return $node;
     }
 
-    /**
-     * Format a MySQL datetime string as ISO 8601.
-     */
     private function formatIso8601(string $datetime): string
     {
         if ($datetime === '') {

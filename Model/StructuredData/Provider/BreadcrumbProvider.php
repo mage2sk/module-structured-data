@@ -12,10 +12,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits a BreadcrumbList derived from the current category tree, or for
- * products from the primary (highest-level) assigned category.
- */
 class BreadcrumbProvider extends AbstractProvider
 {
     public function __construct(
@@ -48,9 +44,6 @@ class BreadcrumbProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * @return array<int,array<string,mixed>>
-     */
     private function buildItems(): array
     {
         $base = $this->getBaseUrl();
@@ -81,7 +74,7 @@ class BreadcrumbProvider extends AbstractProvider
             $pathIds = array_filter(explode('/', (string) $category->getPath()));
             foreach ($pathIds as $id) {
                 if ((int) $id <= 2) {
-                    continue; // skip root ids
+                    continue;
                 }
                 try {
                     $node = $this->categoryRepository->get((int) $id);
@@ -121,9 +114,6 @@ class BreadcrumbProvider extends AbstractProvider
         return $list;
     }
 
-    /**
-     * @param int[] $ids
-     */
     private function pickPrimaryCategory(array $ids): ?\Magento\Catalog\Api\Data\CategoryInterface
     {
         $priorityEnabled = $this->scopeConfig->isSetFlag(
@@ -171,7 +161,7 @@ class BreadcrumbProvider extends AbstractProvider
                     default    => $b['level'] <=> $a['level'],
                 };
             }
-            // Default legacy behavior: deepest category wins.
+
             return $b['level'] <=> $a['level'];
         });
 

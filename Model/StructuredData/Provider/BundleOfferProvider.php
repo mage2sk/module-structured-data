@@ -12,16 +12,6 @@ use Magento\Framework\Registry;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * For bundle products, emits structured-data pricing as either:
- *  - AggregateOffer (dynamic pricing): lowPrice / highPrice from the bundle
- *    price range, offerCount = 1.
- *  - Offer (fixed pricing): a single offer with the fixed final price.
- *
- * Only activates when:
- *  - the current product type_id is "bundle"
- *  - config flag `panth_structured_data/structured_data/configurable_multi_offer` is enabled
- */
 class BundleOfferProvider extends AbstractProvider
 {
     public function __construct(
@@ -72,11 +62,6 @@ class BundleOfferProvider extends AbstractProvider
         return $this->buildDynamicPriceNode($product, $currency, $availability, $url);
     }
 
-    /**
-     * Fixed-price bundle: emit a single Offer with the final price.
-     *
-     * @return array<string,mixed>
-     */
     private function buildFixedPriceNode(
         ProductInterface $product,
         string $currency,
@@ -104,12 +89,6 @@ class BundleOfferProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * Dynamic-price bundle: emit an AggregateOffer with lowPrice / highPrice
-     * derived from the bundle price range.
-     *
-     * @return array<string,mixed>
-     */
     private function buildDynamicPriceNode(
         ProductInterface $product,
         string $currency,
@@ -122,7 +101,6 @@ class BundleOfferProvider extends AbstractProvider
             return [];
         }
 
-        // Ensure sane boundaries
         if ($minPrice <= 0.0) {
             $minPrice = $maxPrice;
         }
@@ -147,19 +125,9 @@ class BundleOfferProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * Resolve min/max prices for a dynamic-price bundle.
-     *
-     * Tries `getTotalPrices()` first (Magento\Bundle\Model\Product\Price),
-     * then falls back to the PriceInfo final_price amount range.
-     *
-     * @return array{0: float, 1: float}
-     */
     private function getPriceRange(ProductInterface $product): array
     {
-        // Strategy 1: Bundle price model getTotalPrices()
         try {
-            /** @var BundlePrice $priceModel */
             $priceModel = $product->getPriceModel();
             if ($priceModel instanceof BundlePrice) {
                 $totalPrices = $priceModel->getTotalPrices($product, 'min', true);
@@ -172,10 +140,8 @@ class BundleOfferProvider extends AbstractProvider
                 }
             }
         } catch (\Throwable) {
-            // fall through
         }
 
-        // Strategy 2: PriceInfo final_price with min/max amounts
         try {
             $priceInfo  = $product->getPriceInfo();
             $finalPrice = $priceInfo->getPrice('final_price');
@@ -187,10 +153,8 @@ class BundleOfferProvider extends AbstractProvider
                 return [$minPrice, $maxPrice];
             }
         } catch (\Throwable) {
-            // fall through
         }
 
-        // Strategy 3: plain getFinalPrice()
         $finalPrice = $this->getFinalPrice($product);
 
         return [$finalPrice, $finalPrice];

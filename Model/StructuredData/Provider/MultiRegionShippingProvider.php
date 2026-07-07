@@ -11,17 +11,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits multi-region `OfferShippingDetails` nodes on product pages.
- *
- * Priority:
- *   1. Magento table-rate shipping entries (if the module + table exists)
- *   2. Magento flat-rate shipping config per-website/store
- *   3. Falls back to the existing DeliveryMethodProvider's textarea config
- *
- * Each shipping method + country combination becomes a separate
- * OfferShippingDetails node attached to the Product Offer.
- */
 class MultiRegionShippingProvider extends AbstractProvider
 {
     private const XML_FLATRATE_ACTIVE = 'carriers/flatrate/active';
@@ -36,9 +25,6 @@ class MultiRegionShippingProvider extends AbstractProvider
     private const XML_HANDLING_TIME_MIN = 'panth_structured_data/structured_data/handling_time_min';
     private const XML_HANDLING_TIME_MAX = 'panth_structured_data/structured_data/handling_time_max';
 
-    /**
-     * Default transit-time estimate when Magento config provides no data.
-     */
     private const DEFAULT_TRANSIT_MIN = 2;
     private const DEFAULT_TRANSIT_MAX = 7;
 
@@ -67,8 +53,6 @@ class MultiRegionShippingProvider extends AbstractProvider
             return false;
         }
 
-        // Only emit when there is no manual delivery_methods config
-        // (otherwise the DeliveryMethodProvider handles it).
         if (trim($this->config->getDeliveryMethods()) !== '') {
             return false;
         }
@@ -110,22 +94,15 @@ class MultiRegionShippingProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * Collect shipping entries from all available Magento shipping sources.
-     *
-     * @return list<array{label: string, country: string, cost: string, transitMin: int, transitMax: int}>
-     */
     private function collectShippingEntries(): array
     {
         $entries = [];
 
-        // 1. Try table-rate entries.
         $tableRates = $this->getTableRateEntries();
         if ($tableRates !== []) {
             return $tableRates;
         }
 
-        // 2. Fall back to flat-rate config.
         $flatRates = $this->getFlatRateEntries();
         if ($flatRates !== []) {
             return $flatRates;
@@ -134,11 +111,6 @@ class MultiRegionShippingProvider extends AbstractProvider
         return $entries;
     }
 
-    /**
-     * Read table-rate shipping entries for the current website.
-     *
-     * @return list<array{label: string, country: string, cost: string, transitMin: int, transitMax: int}>
-     */
     private function getTableRateEntries(): array
     {
         if ($this->tablerateCollectionFactory === null) {
@@ -162,12 +134,10 @@ class MultiRegionShippingProvider extends AbstractProvider
         }
 
         try {
-            /** @var \Magento\OfflineShipping\Model\ResourceModel\Carrier\Tablerate\Collection $collection */
             $collection = $this->tablerateCollectionFactory->create();
             $collection->addFieldToFilter('website_id', $websiteId);
             $collection->setOrder('dest_country_id', 'ASC');
 
-            // Limit to prevent excessive schema on stores with thousands of rates.
             $collection->setPageSize(50);
 
             $entries = [];
@@ -176,7 +146,6 @@ class MultiRegionShippingProvider extends AbstractProvider
                 $country = (string) ($rate->getData('dest_country_id') ?? '*');
                 $price = (float) ($rate->getData('price') ?? 0.0);
 
-                // Deduplicate: keep lowest cost per country.
                 $key = $country;
                 if (isset($seen[$key]) && $seen[$key] <= $price) {
                     continue;
@@ -198,11 +167,6 @@ class MultiRegionShippingProvider extends AbstractProvider
         }
     }
 
-    /**
-     * Build flat-rate shipping entries using Magento's flat-rate carrier config.
-     *
-     * @return list<array{label: string, country: string, cost: string, transitMin: int, transitMax: int}>
-     */
     private function getFlatRateEntries(): array
     {
         try {
@@ -256,12 +220,6 @@ class MultiRegionShippingProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * Build a single OfferShippingDetails JSON-LD node.
-     *
-     * @param array{label: string, country: string, cost: string, transitMin: int, transitMax: int} $entry
-     * @return array<string,mixed>
-     */
     private function buildShippingDetail(array $entry, string $currency): array
     {
         $node = [

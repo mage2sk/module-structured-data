@@ -3,11 +3,6 @@ declare(strict_types=1);
 
 namespace Panth\StructuredData\Model\StructuredData\Provider;
 
-/**
- * Walks the media gallery of the current product and emits a VideoObject
- * node for every entry of type "external-video". Works with Magento's
- * built-in YouTube / Vimeo video gallery support.
- */
 class VideoProvider extends AbstractProvider
 {
     public function getCode(): string

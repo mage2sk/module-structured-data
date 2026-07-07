@@ -7,25 +7,10 @@ use Panth\StructuredData\Api\StructuredDataProviderInterface;
 use Panth\StructuredData\Helper\Config;
 use Psr\Log\LoggerInterface;
 
-/**
- * Aggregates JSON-LD graph fragments from registered providers into a single
- * `@graph` payload. Runs each provider's getJsonLd(), deduplicates nodes by
- * "@id" (or synthetic key of "@type") so e.g. Organization emitted on every
- * page only appears once, and feeds the merged list to the head template.
- *
- * Providers are passed as a DI list via the `providers` argument.
- */
 class Aggregator
 {
-    /** @var array<string,StructuredDataProviderInterface> */
     private array $providers;
 
-    /**
-     * @param array<string,StructuredDataProviderInterface> $providers
-     * @param Config $config
-     * @param LoggerInterface $logger
-     * @param Validator|null $validator
-     */
     public function __construct(
         array $providers,
         private readonly Config $config,
@@ -40,12 +25,6 @@ class Aggregator
         }
     }
 
-    /**
-     * Build a single JSON-LD document ready to be embedded in a
-     * `<script type="application/ld+json">` tag.
-     *
-     * @return string JSON string. Empty string if no providers emit anything.
-     */
     public function build(): string
     {
         if (!$this->config->isEnabled()) {
@@ -66,7 +45,7 @@ class Aggregator
                 if ($node === []) {
                     continue;
                 }
-                // Providers may return a single node or a list of nodes.
+
                 $nodes = $this->isList($node) ? $node : [$node];
                 foreach ($nodes as $item) {
                     if (!is_array($item) || !isset($item['@type'])) {
@@ -76,7 +55,6 @@ class Aggregator
                         ? $item['@id']
                         : (is_array($item['@type']) ? implode(',', $item['@type']) : (string) $item['@type']);
                     if (isset($seen[$id])) {
-                        // Deep-merge to let later nodes augment earlier ones.
                         $seen[$id] = $this->merge($seen[$id], $item);
                         continue;
                     }
@@ -118,15 +96,11 @@ class Aggregator
         if ($json === false) {
             return '';
         }
-        // Prevent XSS: escape all </ sequences inside JSON-LD payloads so
-        // that browsers do not interpret them as closing the <script> tag.
+
         $json = str_replace('</', '<\/', $json);
         return $json;
     }
 
-    /**
-     * @param array<int|string,mixed> $array
-     */
     private function isList(array $array): bool
     {
         if ($array === []) {
@@ -135,11 +109,6 @@ class Aggregator
         return array_keys($array) === range(0, count($array) - 1);
     }
 
-    /**
-     * @param array<string,mixed> $a
-     * @param array<string,mixed> $b
-     * @return array<string,mixed>
-     */
     private function merge(array $a, array $b): array
     {
         foreach ($b as $k => $v) {

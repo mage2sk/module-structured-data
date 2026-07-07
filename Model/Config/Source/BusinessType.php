@@ -5,16 +5,8 @@ namespace Panth\StructuredData\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
-/**
- * Source model for the seller business type configuration.
- *
- * Used in system.xml for `panth_structured_data/structured_data/business_type`.
- */
 class BusinessType implements OptionSourceInterface
 {
-    /**
-     * @return array<int, array{value: string, label: \Magento\Framework\Phrase|string}>
-     */
     public function toOptionArray(): array
     {
         return [

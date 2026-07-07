@@ -11,23 +11,8 @@ use Magento\Framework\Registry;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits `ProductGroup` + `hasVariant` structured data for configurable products.
- *
- * Each configurable product is represented as a `ProductGroup` with `variesBy`
- * referencing schema.org property URLs derived from super-attribute codes, and
- * `hasVariant` containing one `Product` node per enabled child including its own
- * `Offer`.
- *
- * Only fires when:
- *  - product type_id = "configurable"
- *  - config flag `panth_structured_data/structured_data/product_group_enabled` is enabled
- */
 class ProductGroupProvider extends AbstractProvider
 {
-    /**
-     * Maps well-known Magento attribute codes to their schema.org property URLs.
-     */
     private const VARIES_BY_MAP = [
         'color'    => 'https://schema.org/color',
         'size'     => 'https://schema.org/size',
@@ -136,11 +121,6 @@ class ProductGroupProvider extends AbstractProvider
         return $node;
     }
 
-    /**
-     * Read the super-attribute codes from the configurable type model.
-     *
-     * @return string[] Attribute codes (e.g. ['color', 'size'])
-     */
     private function getSuperAttributeCodes(ProductInterface $product): array
     {
         try {
@@ -160,12 +140,6 @@ class ProductGroupProvider extends AbstractProvider
         return $codes;
     }
 
-    /**
-     * Map super attribute codes to schema.org property URLs.
-     *
-     * @param  string[] $attributeCodes
-     * @return string[]
-     */
     private function buildVariesBy(array $attributeCodes): array
     {
         $variesBy = [];
@@ -179,12 +153,6 @@ class ProductGroupProvider extends AbstractProvider
         return $variesBy;
     }
 
-    /**
-     * Build a single variant Product node with its own Offer.
-     *
-     * @param  string[] $superAttributeCodes
-     * @return array<string,mixed>
-     */
     private function buildVariantNode(
         ProductInterface $child,
         string $parentUrl,
@@ -212,7 +180,6 @@ class ProductGroupProvider extends AbstractProvider
             $variant['image'] = $image;
         }
 
-        // Add variant-specific attribute values (color, size, material).
         foreach ($superAttributeCodes as $code) {
             $lower = strtolower($code);
             if (isset(self::VARIES_BY_MAP[$lower])) {
@@ -238,13 +205,9 @@ class ProductGroupProvider extends AbstractProvider
         return $variant;
     }
 
-    /**
-     * @return ProductInterface[]
-     */
     private function getVisibleChildren(ProductInterface $product): array
     {
         try {
-            /** @var ProductInterface[] $children */
             $children = $this->configurableType->getUsedProducts($product);
         } catch (\Throwable) {
             return [];
@@ -333,7 +296,6 @@ class ProductGroupProvider extends AbstractProvider
     private function getAttributeText(ProductInterface $product, string $attributeCode): string
     {
         try {
-            /** @var \Magento\Catalog\Model\Product $product */
             $text = $product->getAttributeText($attributeCode);
             if (is_array($text)) {
                 $text = implode(', ', $text);

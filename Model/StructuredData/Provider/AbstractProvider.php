@@ -9,9 +9,6 @@ use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Api\StructuredDataProviderInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Common helpers shared by structured-data providers.
- */
 abstract class AbstractProvider implements StructuredDataProviderInterface
 {
     public function __construct(
@@ -54,11 +51,6 @@ abstract class AbstractProvider implements StructuredDataProviderInterface
         }
     }
 
-    /**
-     * Schema.org `email` requires a bare RFC 5322 address — no `mailto:` scheme.
-     * Google Rich Results test rejects URI-prefixed values, so strip the prefix
-     * defensively before emitting.
-     */
     protected function normalizeEmail(string $email): string
     {
         $email = trim($email);

@@ -9,15 +9,6 @@ use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 use Psr\Log\LoggerInterface;
 
-/**
- * Merges custom JSON properties (configured in admin) into the Product
- * structured-data node.
- *
- * Config path: panth_structured_data/structured_data/custom_properties (textarea, JSON).
- * Example value: {"brand":{"@type":"Brand","name":"MyBrand"},"material":"Cotton"}
- *
- * Active only on product pages and only when the textarea contains valid JSON.
- */
 class CustomPropertiesProvider extends AbstractProvider
 {
     public function __construct(
@@ -70,8 +61,6 @@ class CustomPropertiesProvider extends AbstractProvider
 
         $url = (string) $product->getProductUrl();
 
-        // Return a Product node so the Aggregator deep-merges these
-        // properties into the existing Product node emitted by ProductProvider.
         return array_merge(
             [
                 '@type' => 'Product',

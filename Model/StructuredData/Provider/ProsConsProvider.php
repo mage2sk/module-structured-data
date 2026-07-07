@@ -3,18 +3,6 @@ declare(strict_types=1);
 
 namespace Panth\StructuredData\Model\StructuredData\Provider;
 
-/**
- * Emits `positiveNotes` / `negativeNotes` structured data on product pages.
- *
- * Reads from configurable product attributes (default: `product_pros` and
- * `product_cons`) containing one item per line. Outputs ItemList nodes
- * per the Google 2025+ Pros/Cons structured data spec.
- *
- * Only fires when:
- *  - We are on a product page (current_product exists)
- *  - At least one pro or con line is present
- *  - Config flag `panth_structured_data/structured_data/pros_cons_enabled` is enabled
- */
 class ProsConsProvider extends AbstractProvider
 {
     public function getCode(): string
@@ -66,11 +54,6 @@ class ProsConsProvider extends AbstractProvider
         return $node;
     }
 
-    /**
-     * Parse a textarea value into trimmed, non-empty lines.
-     *
-     * @return string[]
-     */
     private function parseLines(string $raw): array
     {
         if (trim($raw) === '') {
@@ -93,12 +76,6 @@ class ProsConsProvider extends AbstractProvider
         return $result;
     }
 
-    /**
-     * Build an ItemList node with ListItem elements.
-     *
-     * @param  string[] $items
-     * @return array<string,mixed>
-     */
     private function buildItemList(array $items): array
     {
         $elements = [];

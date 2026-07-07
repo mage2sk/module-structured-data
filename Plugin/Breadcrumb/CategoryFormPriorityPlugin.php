@@ -6,13 +6,6 @@ namespace Panth\StructuredData\Plugin\Breadcrumb;
 use Magento\Catalog\Model\Category\DataProvider as CategoryDataProvider;
 use Panth\StructuredData\Helper\Config as SeoConfig;
 
-/**
- * Injects the `breadcrumbs_priority` field into the category admin form's
- * Search Engine Optimization fieldset.
- *
- * The field renders as a numeric input and includes a tooltip that explains
- * how the priority system works.
- */
 class CategoryFormPriorityPlugin
 {
     public function __construct(
@@ -20,10 +13,6 @@ class CategoryFormPriorityPlugin
     ) {
     }
 
-    /**
-     * @param  array<string, mixed> $result
-     * @return array<string, mixed>
-     */
     public function afterGetMeta(CategoryDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {

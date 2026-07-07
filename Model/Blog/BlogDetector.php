@@ -8,28 +8,10 @@ use Magento\Framework\ObjectManagerInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Detects whether a supported blog module is installed and provides a minimal
- * bridge to retrieve blog post URLs for sitemap generation.
- *
- * Supported blog post model class names are injected via DI (see di.xml) so
- * that no vendor-specific references are hard-coded in this class.
- *
- * ObjectManager is used intentionally: the blog module is an optional soft
- * dependency and may not be installed. DI constructor injection would cause a
- * fatal error if the module is absent.
- */
 class BlogDetector
 {
-    /** @var string[] Supported blog post model classes, injected via DI */
     private array $supportedClasses;
 
-    /**
-     * @param ObjectManagerInterface $objectManager
-     * @param StoreManagerInterface  $storeManager
-     * @param LoggerInterface        $logger
-     * @param string[]               $supportedClasses Blog post model FQCNs, ordered by preference
-     */
     public function __construct(
         private readonly ObjectManagerInterface $objectManager,
         private readonly StoreManagerInterface $storeManager,
@@ -40,9 +22,6 @@ class BlogDetector
         $this->supportedClasses = $supportedClasses;
     }
 
-    /**
-     * Check whether any supported blog module is installed.
-     */
     public function isBlogInstalled(): bool
     {
         foreach ($this->supportedClasses as $class) {
@@ -54,11 +33,6 @@ class BlogDetector
         return false;
     }
 
-    /**
-     * Retrieve blog post URLs and titles for the given store.
-     *
-     * @return array<int,array{url:string,title:string}>
-     */
     public function getBlogPosts(int $storeId): array
     {
         $posts = [];
@@ -73,7 +47,7 @@ class BlogDetector
                 }
 
                 $posts = $this->loadPostsFromModule($class, $storeId, $baseUrl);
-                break; // use the first installed module only
+                break;
             }
         } catch (\Throwable $e) {
             $this->logger->warning(
@@ -85,15 +59,11 @@ class BlogDetector
         return $posts;
     }
 
-    /**
-     * @return array<int,array{url:string,title:string}>
-     */
     private function loadPostsFromModule(string $modelClass, int $storeId, string $baseUrl): array
     {
         $posts = [];
 
         try {
-            /** @var object $collection */
             $collectionFactory = $this->resolveCollectionFactory($modelClass);
             if ($collectionFactory === null) {
                 return [];
@@ -104,12 +74,7 @@ class BlogDetector
             if (method_exists($collection, 'addStoreFilter')) {
                 $collection->addStoreFilter($storeId);
             }
-            // Active-flag columns vary across blog modules — some ship
-            // `is_active`, others ship `enabled` or `status`. Filtering
-            // on a column the table doesn't have raises
-            // "Column not found" and silently drops every post. Probe
-            // the collection's main table for whichever of the common
-            // names actually exists, and apply that filter.
+
             if (method_exists($collection, 'addFieldToFilter')) {
                 $activeColumn = $this->resolveActiveColumn($collection);
                 if ($activeColumn !== null) {
@@ -141,14 +106,8 @@ class BlogDetector
         return $posts;
     }
 
-    /**
-     * Resolve the collection factory for the given post model class.
-     *
-     * Convention: <Model>\ResourceModel\<Model>\CollectionFactory
-     */
     private function resolveCollectionFactory(string $modelClass): ?object
     {
-        // Derive collection factory class name following Magento convention
         $parts     = explode('\\', $modelClass);
         $modelName = array_pop($parts);
         $namespace  = implode('\\', $parts);
@@ -162,11 +121,6 @@ class BlogDetector
         return $this->objectManager->get($collectionFactoryClass);
     }
 
-    /**
-     * Pick whichever active-flag column actually exists on the collection's
-     * main table. Returns null when none of the known names match — the
-     * caller then skips the filter rather than producing an invalid query.
-     */
     private function resolveActiveColumn(object $collection): ?string
     {
         try {
@@ -190,15 +144,12 @@ class BlogDetector
                 }
             }
         } catch (\Throwable) {
-            // Treat introspection failure as "skip the filter" — better
-            // to over-include than to drop every post.
         }
         return null;
     }
 
     private function resolvePostUrl(object $post, string $baseUrl): string
     {
-        // Prefer getPostUrl(), fall back to getUrl()
         if (method_exists($post, 'getPostUrl')) {
             $url = (string) $post->getPostUrl();
             if ($url !== '') {
@@ -213,7 +164,6 @@ class BlogDetector
             }
         }
 
-        // Fallback: build from identifier / url_key
         $identifier = '';
         if (method_exists($post, 'getIdentifier')) {
             $identifier = (string) $post->getIdentifier();

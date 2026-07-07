@@ -13,15 +13,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits up to N top approved Review nodes attached to the current product.
- * Only active if Magento reviews are enabled at the store level.
- *
- * Defensive gate: when the request targets a Panth_Testimonials route and the
- * Panth_Testimonials module is enabled, this provider steps aside so that the
- * testimonials Schema block remains the sole owner of Review/AggregateRating
- * output on those pages.
- */
 class ReviewProvider extends AbstractProvider
 {
     private const MAX_REVIEWS = 5;
@@ -45,8 +36,6 @@ class ReviewProvider extends AbstractProvider
 
     public function isApplicable(): bool
     {
-        // Defensive: never emit on Panth_Testimonials routes when that module
-        // is active; the testimonials Schema block owns Review output there.
         if ($this->isTestimonialsRoute()) {
             return false;
         }
@@ -56,10 +45,6 @@ class ReviewProvider extends AbstractProvider
         return (bool) $this->scopeConfig->isSetFlag('catalog/review/active', ScopeInterface::SCOPE_STORE);
     }
 
-    /**
-     * True when the current frontend route belongs to Panth_Testimonials and
-     * the module itself is enabled.
-     */
     private function isTestimonialsRoute(): bool
     {
         if (!$this->moduleManager->isEnabled('Panth_Testimonials')) {
@@ -124,14 +109,6 @@ class ReviewProvider extends AbstractProvider
         return $out;
     }
 
-    /**
-     * Format a MySQL datetime as ISO 8601, empty string on parse failure.
-     *
-     * Schema.org's `datePublished` requires ISO 8601 so social scrapers and
-     * Google's Rich Results test can parse it. Magento stores review
-     * created_at as `YYYY-MM-DD HH:MM:SS` (no timezone separator, space
-     * instead of `T`), which fails validation when emitted verbatim.
-     */
     private function formatIso8601(string $datetime): string
     {
         if ($datetime === '') {
@@ -144,12 +121,6 @@ class ReviewProvider extends AbstractProvider
         }
     }
 
-    /**
-     * Resolve the average rating for a single review by averaging its vote percentages.
-     *
-     * Magento stores each vote as a percentage (0-100). We average all votes for the
-     * review, then scale from 0-100 to 1-5. Falls back to '5' if no votes are available.
-     */
     private function resolveReviewRating(Review $review): string
     {
         try {
@@ -166,14 +137,13 @@ class ReviewProvider extends AbstractProvider
                 }
                 if ($count > 0) {
                     $avgPercent = $sum / $count;
-                    // Scale from 0-100 percentage to 1-5 star range
+
                     $starRating = round(($avgPercent / 100.0) * 5.0, 1);
                     $starRating = max(1.0, min(5.0, $starRating));
                     return number_format($starRating, 1, '.', '');
                 }
             }
         } catch (\Throwable) {
-            // fall through to default
         }
 
         return '5';

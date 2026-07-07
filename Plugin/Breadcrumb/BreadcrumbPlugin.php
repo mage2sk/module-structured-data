@@ -14,18 +14,6 @@ use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config as SeoConfig;
 use Psr\Log\LoggerInterface;
 
-/**
- * Re-sorts the breadcrumb path for product pages based on category
- * breadcrumb priority weights and/or a configurable path-length strategy.
- *
- * When the `enable_breadcrumb_priority` config flag is active the plugin
- * evaluates every category the current product belongs to, walks each
- * category's ancestor chain, sums up `breadcrumbs_priority` attribute
- * values, and replaces the breadcrumb trail with the winning path.
- *
- * When a `breadcrumb_format` of "shortest" or "longest" is configured the
- * category depth is used as a secondary (or sole) selection criterion.
- */
 class BreadcrumbPlugin
 {
     private const XML_PATH_ENABLED = 'panth_structured_data/breadcrumbs/enable_breadcrumb_priority';
@@ -41,10 +29,6 @@ class BreadcrumbPlugin
     ) {
     }
 
-    /**
-     * @param  array<string, array<string, mixed>> $result
-     * @return array<string, array<string, mixed>>
-     */
     public function afterGetBreadcrumbPath(CatalogHelper $subject, array $result): array
     {
         if (!$this->isEnabled()) {
@@ -78,19 +62,11 @@ class BreadcrumbPlugin
             );
     }
 
-    /**
-     * Evaluate all candidate category paths and return the best ancestor
-     * chain ordered root-first, or null when no valid path exists.
-     *
-     * @param  int[]|string[] $categoryIds
-     * @return array<int, \Magento\Catalog\Api\Data\CategoryInterface>|null
-     */
     private function resolveBestCategoryPath(array $categoryIds): ?array
     {
         $storeId = (int) $this->storeManager->getStore()->getId();
         $format  = $this->getFormat();
 
-        /** @var array<int, array{path: array<int, \Magento\Catalog\Api\Data\CategoryInterface>, weight: int, depth: int}> $candidates */
         $candidates = [];
 
         foreach ($categoryIds as $categoryId) {
@@ -126,13 +102,11 @@ class BreadcrumbPlugin
         }
 
         usort($candidates, function (array $a, array $b) use ($format): int {
-            // Primary sort: highest total weight first
             $weightCmp = $b['weight'] <=> $a['weight'];
             if ($weightCmp !== 0) {
                 return $weightCmp;
             }
 
-            // Secondary sort: path length strategy
             return match ($format) {
                 'shortest' => $a['depth'] <=> $b['depth'],
                 'longest'  => $b['depth'] <=> $a['depth'],
@@ -143,12 +117,6 @@ class BreadcrumbPlugin
         return $candidates[0]['path'];
     }
 
-    /**
-     * Walk the category's path upward and return an ordered array of active
-     * ancestor categories (excluding root categories with level < 2).
-     *
-     * @return array<int, \Magento\Catalog\Api\Data\CategoryInterface>|null
-     */
     private function loadAncestorChain(
         \Magento\Catalog\Api\Data\CategoryInterface $category,
         int $storeId
@@ -165,13 +133,12 @@ class BreadcrumbPlugin
                 continue;
             }
 
-            // Skip the invisible root categories (level 0 and 1)
             if ((int) $ancestor->getLevel() < 2) {
                 continue;
             }
 
             if (!$ancestor->getIsActive()) {
-                return null; // broken chain -- entire path is invalid
+                return null;
             }
 
             $chain[] = $ancestor;
@@ -180,18 +147,10 @@ class BreadcrumbPlugin
         return empty($chain) ? null : $chain;
     }
 
-    /**
-     * Reconstruct the Magento breadcrumb array from the resolved ancestor
-     * chain plus the current product.
-     *
-     * @param  array<int, \Magento\Catalog\Api\Data\CategoryInterface> $categoryChain
-     * @return array<string, array<string, mixed>>
-     */
     private function buildBreadcrumbTrail(array $categoryChain, Product $product): array
     {
         $crumbs = [];
 
-        // Home crumb
         $crumbs['home'] = [
             'label' => __('Home'),
             'title' => null,
@@ -200,7 +159,6 @@ class BreadcrumbPlugin
             'last'  => false,
         ];
 
-        // Category crumbs
         foreach ($categoryChain as $index => $category) {
             $crumbs['category' . $category->getId()] = [
                 'label' => $category->getName(),
@@ -211,7 +169,6 @@ class BreadcrumbPlugin
             ];
         }
 
-        // Product crumb (always last)
         $crumbs['product'] = [
             'label' => $product->getName(),
             'title' => null,

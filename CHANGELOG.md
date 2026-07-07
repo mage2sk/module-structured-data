@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.13 - 2026-07-07
+
+- Code cleanup: removed redundant inline comments and docblocks from the PHP source. No functional changes.
+
 ## 1.0.12 - 2026-06-18
 
 - Rewrote README to match gold template structure: added Quick Answer block, Who Is It For section, grouped Key Features, full Configuration table sourced from system.xml, FAQ section, and Quick Links table. Updated canonical to the live product page. Removed old commercemarketplace.adobe.com links and replaced them with the live product page URL.

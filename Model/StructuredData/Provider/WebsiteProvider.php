@@ -3,10 +3,6 @@ declare(strict_types=1);
 
 namespace Panth\StructuredData\Model\StructuredData\Provider;
 
-/**
- * Emits a WebSite node with a SearchAction so Google can show sitelinks
- * search boxes. Uses Magento's on-site search endpoint.
- */
 class WebsiteProvider extends AbstractProvider
 {
     public function getCode(): string

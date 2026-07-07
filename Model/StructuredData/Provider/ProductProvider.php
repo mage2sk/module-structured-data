@@ -15,14 +15,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Builds a rich Product + Offer node for the current product page.
- *
- * Includes Brand, Audience, AggregateRating (when reviews are enabled),
- * itemCondition, availability, priceValidUntil, hasMerchantReturnPolicy and
- * shippingDetails stubs (values can be overridden via config). Falls back
- * gracefully on every missing attribute.
- */
 class ProductProvider extends AbstractProvider
 {
     private const XML_LIMITED_STOCK_THRESHOLD = 'panth_structured_data/structured_data/limited_stock_threshold';
@@ -129,7 +121,6 @@ class ProductProvider extends AbstractProvider
             $node['aggregateRating'] = $rating;
         }
 
-        // Content freshness signals
         $dateModified = $this->formatIso8601((string) ($product->getData('updated_at') ?? ''));
         if ($dateModified !== '') {
             $node['dateModified'] = $dateModified;
@@ -142,17 +133,6 @@ class ProductProvider extends AbstractProvider
         return $node;
     }
 
-    /**
-     * Normalise a value from `Product::getAttributeText()`.
-     *
-     * That method can return a string (single-select / text), an array of
-     * strings (multi-select), `false` (no attribute), or `null` (unset).
-     * Casting an array straight to string triggers Magento's ErrorHandler
-     * which converts the PHP warning into an Exception — the Aggregator
-     * then catches it and silently drops the ENTIRE Product node. So we
-     * normalise here before consumption: arrays join with `, `, scalars
-     * trim to string, non-stringables become empty.
-     */
     private function coerceAttributeText(mixed $value): string
     {
         if (is_string($value)) {
@@ -171,9 +151,6 @@ class ProductProvider extends AbstractProvider
         return '';
     }
 
-    /**
-     * Format a MySQL datetime string as ISO 8601.
-     */
     private function formatIso8601(string $datetime): string
     {
         if ($datetime === '') {
@@ -187,9 +164,6 @@ class ProductProvider extends AbstractProvider
         }
     }
 
-    /**
-     * @return array<int,string>
-     */
     private function buildImages(ProductInterface $product): array
     {
         $urls = [];
@@ -217,28 +191,13 @@ class ProductProvider extends AbstractProvider
         return $urls;
     }
 
-    /**
-     * @return array<string,mixed>
-     */
     private function buildOffer(ProductInterface $product, string $currency, string $url): array
     {
-        // Multi-variant types (configurable / bundle / grouped) always have
-        // their offer promoted to AggregateOffer by the specialised provider
-        // that runs later in the graph. Emitting a scalar `price` here would
-        // leave it in the merged AggregateOffer alongside `lowPrice` /
-        // `highPrice`, which the Aggregator's deep-merge preserves — and
-        // Google's Rich Results validator flags the mixed shape. Skip the
-        // price/currency/availability/url fields for those types; the shared
-        // offer-level extras (itemCondition, seller, priceValidUntil,
-        // shippingDetails, hasMerchantReturnPolicy) still get merged in so a
-        // bundle or grouped product still carries its return policy and the
-        // configured condition on the AggregateOffer node.
         $typeId = (string) $product->getTypeId();
         $isVariantType = in_array($typeId, ['configurable', 'bundle', 'grouped'], true);
 
         $finalPrice = $product->getFinalPrice();
         if ($finalPrice === null || $finalPrice === false) {
-            // Complex product: price may live on price info.
             try {
                 $finalPrice = (float) $product->getPriceInfo()->getPrice('final_price')->getValue();
             } catch (\Throwable) {
@@ -247,9 +206,6 @@ class ProductProvider extends AbstractProvider
         }
         $finalPrice = (float) $finalPrice;
 
-        // Simple products require a positive price to emit an Offer; variant
-        // types don't (their price lives on lowPrice/highPrice from the
-        // specialised provider).
         if (!$isVariantType && $finalPrice <= 0.0) {
             return [];
         }
@@ -269,8 +225,6 @@ class ProductProvider extends AbstractProvider
             $offer['priceValidUntil'] = $priceValidUntil;
         }
 
-        // Only add inline return policy stub if the dedicated ReturnPolicyProvider is NOT enabled
-        // (i.e. return_policy_days is 0 or unset — meaning no dedicated provider is active).
         if ($this->config->getReturnPolicyDays() <= 0) {
             $offer['hasMerchantReturnPolicy'] = [
                 '@type' => 'MerchantReturnPolicy',
@@ -282,8 +236,6 @@ class ProductProvider extends AbstractProvider
             ];
         }
 
-        // Only add inline shipping stub if the dedicated DeliveryMethodProvider is NOT enabled
-        // (i.e. delivery_methods config is empty — meaning no dedicated provider is active).
         if (trim($this->config->getDeliveryMethods()) === '') {
             $offer['shippingDetails'] = [
                 '@type' => 'OfferShippingDetails',
@@ -317,11 +269,6 @@ class ProductProvider extends AbstractProvider
         return $offer;
     }
 
-    /**
-     * Determine the priceValidUntil date for the offer.
-     *
-     * Priority: product special_to_date (if set and in the future) > config default > empty.
-     */
     private function resolvePriceValidUntil(ProductInterface $product): string
     {
         $specialTo = (string) ($product->getSpecialToDate() ?? '');
@@ -332,7 +279,6 @@ class ProductProvider extends AbstractProvider
                     return date('Y-m-d', $ts);
                 }
             } catch (\Throwable) {
-                // fall through to config default
             }
         }
 
@@ -344,23 +290,15 @@ class ProductProvider extends AbstractProvider
                     return date('Y-m-d', $ts);
                 }
             } catch (\Throwable) {
-                // invalid config value — fall through
             }
         }
 
-        // Final fallback: one year from today (Google requires a non-empty value)
         return date('Y-m-d', strtotime('+1 year'));
     }
 
-    /**
-     * @return array<string,mixed>
-     */
     private function buildRating(ProductInterface $product): array
     {
         try {
-            // Preserve any existing RatingSummary on the shared product instance — Magento's
-            // Review::getEntitySummary() overwrites it with a DataObject, which breaks
-            // downstream templates (e.g. Hyva review summary.phtml) that expect an int/float.
             $hadOriginal = $product->hasData('rating_summary');
             $original = $hadOriginal ? $product->getData('rating_summary') : null;
 
@@ -368,7 +306,6 @@ class ProductProvider extends AbstractProvider
             $review->getEntitySummary($product, (int) $this->storeManager->getStore()->getId());
             $summary = $product->getRatingSummary();
 
-            // Restore the original value (or unset it) so we never mutate the shared product.
             if ($hadOriginal) {
                 $product->setData('rating_summary', $original);
             } else {
@@ -385,7 +322,7 @@ class ProductProvider extends AbstractProvider
             }
             return [
                 '@type' => 'AggregateRating',
-                'ratingValue' => number_format($rating / 20.0, 2, '.', ''), // Magento scale 0-100
+                'ratingValue' => number_format($rating / 20.0, 2, '.', ''),
                 'bestRating' => '5',
                 'worstRating' => '1',
                 'reviewCount' => $reviewCount,
@@ -395,20 +332,9 @@ class ProductProvider extends AbstractProvider
         }
     }
 
-    /**
-     * Determine granular schema.org availability beyond simple InStock/OutOfStock.
-     *
-     * Priority:
-     *   1. Product disabled or not visible individually → Discontinued
-     *   2. news_from_date in the future                → PreOrder
-     *   3. Salable + available                         → InStock (or LimitedAvailability)
-     *   4. Qty = 0 but backorders enabled              → BackOrder
-     *   5. Anything else out of stock                  → OutOfStock
-     */
     private function resolveAvailability(ProductInterface $product): string
     {
         try {
-            // Discontinued: disabled or not visible individually.
             $status = (int) $product->getStatus();
             $visibility = (int) $product->getVisibility();
             if ($status === \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED
@@ -417,7 +343,6 @@ class ProductProvider extends AbstractProvider
                 return 'https://schema.org/Discontinued';
             }
 
-            // PreOrder: news_from_date is in the future.
             $newsFrom = (string) ($product->getData('news_from_date') ?? '');
             if ($newsFrom !== '') {
                 $ts = strtotime($newsFrom);
@@ -426,7 +351,6 @@ class ProductProvider extends AbstractProvider
                 }
             }
 
-            // Stock-based checks require StockRegistryInterface.
             if ($this->stockRegistry !== null) {
                 $stockItem = $this->stockRegistry->getStockItem(
                     (int) $product->getId()
@@ -436,7 +360,6 @@ class ProductProvider extends AbstractProvider
                 $isInStock = (bool) $stockItem->getIsInStock();
                 $backorders = (int) $stockItem->getBackorders();
 
-                // Out of stock with backorders enabled → BackOrder.
                 if (!$isInStock && $backorders > 0) {
                     return 'https://schema.org/BackOrder';
                 }
@@ -444,37 +367,29 @@ class ProductProvider extends AbstractProvider
                     return 'https://schema.org/BackOrder';
                 }
 
-                // Out of stock, no backorders → OutOfStock.
                 if (!$isInStock) {
                     return 'https://schema.org/OutOfStock';
                 }
 
-                // LimitedAvailability: in stock but below threshold.
                 $threshold = $this->getLimitedStockThreshold();
                 if ($qty > 0 && $qty < $threshold) {
                     return 'https://schema.org/LimitedAvailability';
                 }
 
-                // In stock with sufficient quantity.
                 if ($product->isSalable() || $isInStock) {
                     return 'https://schema.org/InStock';
                 }
             }
 
-            // Fallback when StockRegistry is unavailable.
             if ($product->isAvailable()) {
                 return 'https://schema.org/InStock';
             }
         } catch (\Throwable) {
-            // On any exception, fall through to safe default.
         }
 
         return 'https://schema.org/OutOfStock';
     }
 
-    /**
-     * Read the limited-stock threshold from config (default 5).
-     */
     private function getLimitedStockThreshold(): int
     {
         if ($this->scopeConfig === null) {

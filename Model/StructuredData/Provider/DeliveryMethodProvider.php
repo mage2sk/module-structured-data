@@ -10,25 +10,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits `shippingDetails` (OfferShippingDetails) for the Product/Offer node
- * on product pages.
- *
- * Reads a newline-delimited textarea from:
- *   panth_structured_data/structured_data/delivery_methods
- *
- * Each line follows the format:
- *   Label | minDays | maxDays | shippingCost
- *
- * Example:
- *   Standard Shipping | 3 | 7 | 5.99
- *   Express Shipping | 1 | 2 | 14.99
- *   Free Shipping | 5 | 10 | 0
- *
- * If the cost column is omitted it defaults to 0 (free).
- * The currency is resolved from the current store.
- * The shipping destination country comes from the store's default country config.
- */
 class DeliveryMethodProvider extends AbstractProvider
 {
     private const XML_STORE_COUNTRY = 'general/country/default';
@@ -95,11 +76,6 @@ class DeliveryMethodProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * Parse the textarea config into structured delivery entries.
-     *
-     * @return list<array{name: string, minDays: int, maxDays: int, cost: string}>
-     */
     private function parseDeliveryLines(): array
     {
         $raw = $this->config->getDeliveryMethods();
@@ -141,12 +117,6 @@ class DeliveryMethodProvider extends AbstractProvider
         return $entries;
     }
 
-    /**
-     * Build a single OfferShippingDetails node.
-     *
-     * @param array{name: string, minDays: int, maxDays: int, cost: string} $entry
-     * @return array<string,mixed>
-     */
     private function buildShippingDetail(array $entry, string $currency, string $country): array
     {
         return [

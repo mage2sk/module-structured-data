@@ -10,16 +10,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits a MerchantReturnPolicy schema.org node on product pages.
- *
- * Config fields used:
- *  - panth_structured_data/structured_data/return_policy_days  (int, must be > 0 to activate)
- *  - panth_structured_data/structured_data/return_policy_type  (refund|exchange)
- *  - panth_structured_data/structured_data/return_policy_fees  (free|custom string)
- *
- * The applicable country is read from the store's country configuration.
- */
 class ReturnPolicyProvider extends AbstractProvider
 {
     private const XML_RETURN_DAYS = 'panth_structured_data/structured_data/return_policy_days';
@@ -78,8 +68,6 @@ class ReturnPolicyProvider extends AbstractProvider
 
         $returnType = $this->getReturnType($storeId);
         if ($returnType !== '') {
-            // Schema.org doesn't have a direct "refund vs exchange" field,
-            // but we include it as an additional property for richer data.
             $node['additionalProperty'] = [
                 '@type' => 'PropertyValue',
                 'name'  => 'Return Type',
@@ -116,14 +104,6 @@ class ReturnPolicyProvider extends AbstractProvider
         return $value;
     }
 
-    /**
-     * Schema.org's `returnFees` only accepts values from the `ReturnFeesEnumeration`
-     * (FreeReturn / ReturnFeesCustomerResponsibility / ReturnShippingFees /
-     * RestockingFees). Any other string — including a plain "5.99" or the
-     * merchant's free-text "Paid by customer" — will fail Google's Rich Results
-     * validator. We only recognise the safe `free` alias and fall back to
-     * `ReturnFeesCustomerResponsibility` for anything else.
-     */
     private function getReturnFees(?int $storeId): string
     {
         $value = (string) ($this->scopeConfig->getValue(
@@ -146,10 +126,6 @@ class ReturnPolicyProvider extends AbstractProvider
             return $enum[$lower];
         }
 
-        // Non-standard admin-entered string (e.g. "$5.99 restocking fee") maps
-        // to the catch-all customer-responsibility enum so the payload still
-        // validates. The human-readable description belongs in returnPolicyBody
-        // if the merchant wants it — not as the enum value itself.
         return 'https://schema.org/ReturnFeesCustomerResponsibility';
     }
 

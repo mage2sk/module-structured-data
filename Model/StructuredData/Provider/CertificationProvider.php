@@ -10,28 +10,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits `hasCertification` nodes on the Product structured-data node for
- * product pages.
- *
- * Reads from a product textarea attribute (default: `certifications`) with one
- * certification per line in the format:
- *
- *   Authority | Name | ID
- *
- * Example:
- *   FSC | FSC Certified | FSC-C012345
- *   EU Organic | Organic Certification | EU-BIO-140
- *
- * Each parsed line becomes a schema.org `Certification` node with:
- *  - certificationAuthority  (Organization)
- *  - name                    (the certification name)
- *  - certificationIdentification (the ID string)
- *
- * Config paths:
- *  - panth_structured_data/structured_data/certification_enabled      (enable/disable)
- *  - panth_structured_data/structured_data/certification_attribute     (default: certifications)
- */
 class CertificationProvider extends AbstractProvider
 {
     private const XML_ENABLED   = 'panth_structured_data/structured_data/certification_enabled';
@@ -90,11 +68,6 @@ class CertificationProvider extends AbstractProvider
         ];
     }
 
-    /**
-     * Parse the textarea value into structured certification entries.
-     *
-     * @return list<array<string, mixed>>
-     */
     private function parseCertifications(string $raw): array
     {
         $lines = preg_split('/\r?\n/', $raw);

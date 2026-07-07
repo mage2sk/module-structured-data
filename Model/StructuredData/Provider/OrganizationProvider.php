@@ -10,11 +10,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 
-/**
- * Emits a single Organization node per page. Data is pulled from core store
- * identity fields with `panth_structured_data/organization/*` overrides + social profile
- * URLs (sameAs).
- */
 class OrganizationProvider extends AbstractProvider
 {
     public const XML_LEGAL_NAME = 'panth_structured_data/organization/legal_name';
@@ -109,9 +104,6 @@ class OrganizationProvider extends AbstractProvider
         return $node;
     }
 
-    /**
-     * @return array<string,string>
-     */
     private function buildAddress(int $storeId): array
     {
         $street = (string) $this->scopeValue(self::XML_STREET, $storeId);
@@ -142,16 +134,10 @@ class OrganizationProvider extends AbstractProvider
         return $addr;
     }
 
-    /**
-     * Merge URLs from the legacy `same_as` textarea with dedicated social profile fields.
-     *
-     * @return array<int,string>
-     */
     private function buildSameAs(int $storeId): array
     {
         $out = [];
 
-        // Legacy: free-form textarea (comma / newline separated)
         $raw = (string) $this->scopeValue(self::XML_SAME_AS, $storeId);
         if ($raw !== '') {
             $lines = preg_split('/[\r\n,]+/', $raw) ?: [];
@@ -163,13 +149,11 @@ class OrganizationProvider extends AbstractProvider
             }
         }
 
-        // Dedicated social profile config fields
         $socialUrls = $this->config->getSocialProfileUrls($storeId);
         foreach ($socialUrls as $url) {
             $out[] = $url;
         }
 
-        // Deduplicate while preserving order
         return array_values(array_unique($out));
     }
 
