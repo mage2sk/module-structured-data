@@ -89,7 +89,7 @@ class ProductProvider extends AbstractProvider
         }
 
         $brandAttr = $this->config->getBrandAttribute() ?: 'manufacturer';
-        $brandName = $this->coerceAttributeText($product->getAttributeText($brandAttr));
+        $brandName = $this->coerceAttributeText($this->safeAttributeText($product, $brandAttr));
         if ($brandName === '') {
             $brandName = trim((string) ($product->getData('brand') ?? ''));
         }
@@ -100,7 +100,7 @@ class ProductProvider extends AbstractProvider
             ];
         }
 
-        $audience = $this->coerceAttributeText($product->getAttributeText('gender'));
+        $audience = $this->coerceAttributeText($this->safeAttributeText($product, 'gender'));
         if ($audience === '') {
             $audience = trim((string) ($product->getData('target_audience') ?? ''));
         }

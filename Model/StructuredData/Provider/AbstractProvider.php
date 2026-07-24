@@ -51,6 +51,17 @@ abstract class AbstractProvider implements StructuredDataProviderInterface
         }
     }
 
+    protected function safeAttributeText(\Magento\Catalog\Api\Data\ProductInterface $product, string $code): string|array|false
+    {
+        try {
+            return method_exists($product, 'getAttributeText')
+                ? $product->getAttributeText($code)
+                : '';
+        } catch (\Throwable) {
+            return '';
+        }
+    }
+
     protected function normalizeEmail(string $email): string
     {
         $email = trim($email);

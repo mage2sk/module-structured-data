@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.14 - 2026-07-24
+
+- Fix: the Product node was dropped entirely on stores without a `gender` product attribute. `ProductProvider` called `$product->getAttributeText('gender')` (and the configurable brand attribute) unguarded; when the attribute code does not exist on the store, Magento's `getAttribute()` returns `false` and the call crashes with `Call to a member function getSource() on false`. The provider-level try/catch swallowed the error, so every product page silently lost the whole Product/Offer/AggregateRating node while dependent nodes (Review `itemReviewed`, SaleEvent offer) kept referencing it. Missing attributes are now treated as empty values.
+- Added `AbstractProvider::safeAttributeText()` and routed all unguarded `getAttributeText()` calls (`ProductProvider` brand + audience, `BrandProvider`) through it.
+- Added unit regression test covering a product whose store has no `gender` attribute.
+
 ## 1.0.13 - 2026-07-07
 
 - Code cleanup: removed redundant inline comments and docblocks from the PHP source. No functional changes.

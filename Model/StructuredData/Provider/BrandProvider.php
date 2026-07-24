@@ -39,7 +39,7 @@ class BrandProvider extends AbstractProvider
         $brand = '';
         $brandAttr = $this->config->getBrandAttribute() ?: 'manufacturer';
         if ($product->hasData($brandAttr)) {
-            $text = $product->getAttributeText($brandAttr);
+            $text = $this->safeAttributeText($product, $brandAttr);
             $brand = is_string($text) ? $text : '';
         }
         if ($brand === '') {
