@@ -10,6 +10,11 @@ use Psr\Log\LoggerInterface;
 
 class BlogDetector
 {
+    private const POST_VIEW_ACTION_CLASSES = [
+        'mpblog_post_view' => ['Mageplaza\Blog\Model\Post'],
+        'blog_post_view'   => ['Magefan\Blog\Model\Post', 'Mirasvit\Blog\Model\Post'],
+    ];
+
     private array $supportedClasses;
 
     public function __construct(
@@ -31,6 +36,27 @@ class BlogDetector
         }
 
         return false;
+    }
+
+    public function getPostById(string $fullActionName, int $postId): ?object
+    {
+        if ($postId <= 0) {
+            return null;
+        }
+
+        $candidates = self::POST_VIEW_ACTION_CLASSES[strtolower($fullActionName)] ?? [];
+        foreach ($candidates as $class) {
+            if (!in_array($class, $this->supportedClasses, true) || !class_exists($class)) {
+                continue;
+            }
+
+            $post = $this->loadPostById($class, $postId);
+            if ($post !== null) {
+                return $post;
+            }
+        }
+
+        return null;
     }
 
     public function getBlogPosts(int $storeId): array
@@ -106,6 +132,45 @@ class BlogDetector
         return $posts;
     }
 
+    private function loadPostById(string $modelClass, int $postId): ?object
+    {
+        try {
+            $collectionFactory = $this->resolveCollectionFactory($modelClass);
+            if ($collectionFactory === null) {
+                return null;
+            }
+
+            $collection = $collectionFactory->create();
+
+            $idField = 'post_id';
+            if (method_exists($collection, 'getResource')) {
+                $resource = $collection->getResource();
+                if ($resource !== null && method_exists($resource, 'getIdFieldName')) {
+                    $field = (string) $resource->getIdFieldName();
+                    if ($field !== '') {
+                        $idField = $field;
+                    }
+                }
+            }
+
+            $collection->addFieldToFilter($idField, $postId);
+            $collection->setPageSize(1);
+
+            foreach ($collection as $post) {
+                if (method_exists($post, 'getData') && (int) $post->getData($idField) === $postId) {
+                    return $post;
+                }
+            }
+        } catch (\Throwable $e) {
+            $this->logger->warning(
+                'Panth SEO BlogDetector: current post load failed',
+                ['class' => $modelClass, 'error' => $e->getMessage()]
+            );
+        }
+
+        return null;
+    }
+
     private function resolveCollectionFactory(string $modelClass): ?object
     {
         $parts     = explode('\\', $modelClass);
@@ -171,6 +236,18 @@ class BlogDetector
             $identifier = (string) $post->getUrlKey();
         }
 
+        if ($identifier === '' && method_exists($post, 'getData')) {
+            foreach (['identifier', 'url_key'] as $key) {
+                $value = $post->getData($key);
+                if (is_scalar($value)) {
+                    $identifier = trim((string) $value);
+                    if ($identifier !== '') {
+                        break;
+                    }
+                }
+            }
+        }
+
         if ($identifier !== '') {
             return $baseUrl . 'blog/' . ltrim($identifier, '/');
         }
@@ -180,12 +257,25 @@ class BlogDetector
 
     private function resolvePostTitle(object $post): string
     {
-        if (method_exists($post, 'getTitle')) {
-            return (string) $post->getTitle();
+        foreach (['getTitle', 'getName'] as $method) {
+            if (method_exists($post, $method)) {
+                $title = trim((string) $post->{$method}());
+                if ($title !== '') {
+                    return $title;
+                }
+            }
         }
 
-        if (method_exists($post, 'getName')) {
-            return (string) $post->getName();
+        if (method_exists($post, 'getData')) {
+            foreach (['title', 'name'] as $key) {
+                $value = $post->getData($key);
+                if (is_scalar($value)) {
+                    $title = trim((string) $value);
+                    if ($title !== '') {
+                        return $title;
+                    }
+                }
+            }
         }
 
         return '';

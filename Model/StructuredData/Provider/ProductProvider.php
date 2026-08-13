@@ -14,10 +14,12 @@ use Magento\Review\Model\ReviewFactory;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
+use Panth\StructuredData\Model\StructuredData\Shipping\ShippingDetailsBuilder;
 
 class ProductProvider extends AbstractProvider
 {
     private const XML_LIMITED_STOCK_THRESHOLD = 'panth_structured_data/structured_data/limited_stock_threshold';
+    private const XML_STORE_COUNTRY           = 'general/country/default';
 
     public function __construct(
         Registry $registry,
@@ -28,7 +30,8 @@ class ProductProvider extends AbstractProvider
         private readonly PriceCurrencyInterface $priceCurrency,
         private readonly ReviewFactory $reviewFactory,
         private readonly ?StockRegistryInterface $stockRegistry = null,
-        private readonly ?ScopeConfigInterface $scopeConfig = null
+        private readonly ?ScopeConfigInterface $scopeConfig = null,
+        private readonly ?ShippingDetailsBuilder $shippingDetailsBuilder = null
     ) {
         parent::__construct($registry, $request, $storeManager, $config);
     }
@@ -92,6 +95,9 @@ class ProductProvider extends AbstractProvider
         $brandName = $this->coerceAttributeText($this->safeAttributeText($product, $brandAttr));
         if ($brandName === '') {
             $brandName = trim((string) ($product->getData('brand') ?? ''));
+        }
+        if ($brandName === '') {
+            $brandName = $this->config->getDefaultBrand();
         }
         if ($brandName !== '') {
             $node['brand'] = [
@@ -228,7 +234,7 @@ class ProductProvider extends AbstractProvider
         if ($this->config->getReturnPolicyDays() <= 0) {
             $offer['hasMerchantReturnPolicy'] = [
                 '@type' => 'MerchantReturnPolicy',
-                'applicableCountry' => 'US',
+                'applicableCountry' => $this->getStoreCountry(),
                 'returnPolicyCategory' => 'https://schema.org/MerchantReturnFiniteReturnWindow',
                 'merchantReturnDays' => 30,
                 'returnMethod' => 'https://schema.org/ReturnByMail',
@@ -236,37 +242,37 @@ class ProductProvider extends AbstractProvider
             ];
         }
 
-        if (trim($this->config->getDeliveryMethods()) === '') {
-            $offer['shippingDetails'] = [
-                '@type' => 'OfferShippingDetails',
-                'shippingRate' => [
-                    '@type' => 'MonetaryAmount',
-                    'value' => '0',
-                    'currency' => $currency,
-                ],
-                'shippingDestination' => [
-                    '@type' => 'DefinedRegion',
-                    'addressCountry' => 'US',
-                ],
-                'deliveryTime' => [
-                    '@type' => 'ShippingDeliveryTime',
-                    'handlingTime' => [
-                        '@type' => 'QuantitativeValue',
-                        'minValue' => 0,
-                        'maxValue' => 1,
-                        'unitCode' => 'DAY',
-                    ],
-                    'transitTime' => [
-                        '@type' => 'QuantitativeValue',
-                        'minValue' => 2,
-                        'maxValue' => 5,
-                        'unitCode' => 'DAY',
-                    ],
-                ],
-            ];
+        if ($this->shippingDetailsBuilder !== null) {
+            $shippingDetails = $this->shippingDetailsBuilder->build($currency);
+            if ($shippingDetails !== []) {
+                $offer['shippingDetails'] = count($shippingDetails) === 1
+                    ? $shippingDetails[0]
+                    : $shippingDetails;
+            }
         }
 
         return $offer;
+    }
+
+    private function getStoreCountry(): string
+    {
+        if ($this->scopeConfig === null) {
+            return 'US';
+        }
+
+        try {
+            $storeId = (int) $this->storeManager->getStore()->getId();
+        } catch (\Throwable) {
+            $storeId = null;
+        }
+
+        $country = (string) ($this->scopeConfig->getValue(
+            self::XML_STORE_COUNTRY,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?? '');
+
+        return $country !== '' ? $country : 'US';
     }
 
     private function resolvePriceValidUntil(ProductInterface $product): string

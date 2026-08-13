@@ -26,6 +26,7 @@
                 <item name="review" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\ReviewProvider</item>
                 <item name="video" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\VideoProvider</item>
                 <item name="article" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\CmsArticleProvider</item>
+                <item name="blogPost" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\BlogPostProvider</item>
                 <item name="return_policy" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\ReturnPolicyProvider</item>
                 <item name="brand" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\BrandProvider</item>
                 <item name="productList" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\ProductListProvider</item>
@@ -47,6 +48,13 @@
         </arguments>
     </type>
 
+    <type name="Panth\StructuredData\Model\StructuredData\Provider\ProductProvider">
+        <arguments>
+            <argument name="scopeConfig" xsi:type="object">Magento\Framework\App\Config\ScopeConfigInterface</argument>
+            <argument name="shippingDetailsBuilder" xsi:type="object">Panth\StructuredData\Model\StructuredData\Shipping\ShippingDetailsBuilder</argument>
+        </arguments>
+    </type>
+
     <type name="Panth\StructuredData\Model\StructuredData\Aggregator">
         <arguments>
             <argument name="providers" xsi:type="array">
@@ -58,6 +66,7 @@
                 <item name="review" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\ReviewProvider</item>
                 <item name="video" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\VideoProvider</item>
                 <item name="article" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\CmsArticleProvider</item>
+                <item name="blogPost" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\BlogPostProvider</item>
                 <item name="return_policy" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\ReturnPolicyProvider</item>
                 <item name="brand" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\BrandProvider</item>
                 <item name="productList" xsi:type="object">Panth\StructuredData\Model\StructuredData\Provider\ProductListProvider</item>
