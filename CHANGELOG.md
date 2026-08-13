@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.17 - 2026-08-13
+
+- Re-release of 1.0.16; no code changes.
+
 ## 1.0.16 - 2026-08-13
 
 - Fix: the offer builder no longer fabricates a `shippingDetails` stub (hardcoded `US` destination, free rate, 0-1 day handling) when no delivery methods are configured; the field is omitted instead.
