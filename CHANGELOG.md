@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.16 - 2026-08-13
+
+- Fix: the offer builder no longer fabricates a `shippingDetails` stub (hardcoded `US` destination, free rate, 0-1 day handling) when no delivery methods are configured; the field is omitted instead.
+- Fix: the inline return-policy `applicableCountry` resolves from `general/country/default` instead of a hardcoded `US`.
+- Fix: the configured `default_brand` is now used as the brand fallback when the brand attribute and `brand` product data are empty (new `Config::getDefaultBrand()`).
+- Fix: configured delivery methods are emitted as `shippingDetails` inside the product offer (new shared `ShippingDetailsBuilder`) instead of a detached top-level Offer node that Google cannot associate with the product. `handlingTime` is included per line via the extended `Label | Handling Min | Handling Max | Transit Min | Transit Max | Cost` format; the legacy 4-part format still parses unchanged.
+- New: `BlogPostProvider` emits `BlogPosting` JSON-LD on Mageplaza_Blog post pages (optional integration, no hard Mageplaza class references); `BlogDetector` falls back to raw data keys for magic-getter post models.
+- DI: `ProductProvider`'s `scopeConfig` argument is now explicitly wired in `di.xml` (Magento DI does not inject optional constructor parameters).
+
 ## 1.0.15
 
 - Replaced typographic characters (em dashes, curly quotes, ellipsis) with plain ASCII punctuation. No functional changes.

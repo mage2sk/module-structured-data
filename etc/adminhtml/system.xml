@@ -183,9 +183,9 @@
                     <label>Accepted Payment Methods</label>
                     <comment>One method per line (e.g. Visa, Mastercard, PayPal). Used in Offer structured data.</comment>
                 </field>
-                <field id="delivery_methods" translate="label" type="textarea" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="delivery_methods" translate="label comment" type="textarea" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Delivery Methods</label>
-                    <comment>One method per line (e.g. Standard Shipping, Express). Used in Offer structured data.</comment>
+                    <comment><![CDATA[One method per line, emitted as shippingDetails inside the product Offer. Format: <code>Label | Transit Min | Transit Max | Cost</code> or <code>Label | Handling Min | Handling Max | Transit Min | Transit Max | Cost</code> (days). Example: <code>Standard Shipping | 1 | 2 | 3 | 5 | 4.99</code>. Leave empty to omit shippingDetails.]]></comment>
                 </field>
                 <field id="product_condition" translate="label" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Product Condition</label>

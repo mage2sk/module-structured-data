@@ -21,6 +21,7 @@ class Config
     public const XML_SD_PRODUCT_CONDITION         = 'panth_structured_data/structured_data/product_condition';
     public const XML_SD_PRICE_VALID_UNTIL_DEFAULT = 'panth_structured_data/structured_data/price_valid_until_default';
     public const XML_SD_CUSTOM_PROPERTIES         = 'panth_structured_data/structured_data/custom_properties';
+    public const XML_SD_DEFAULT_BRAND             = 'panth_structured_data/structured_data/default_brand';
 
     public const XML_BREADCRUMBS_PRIORITY_ENABLED = 'panth_structured_data/breadcrumbs/enable_breadcrumb_priority';
     public const XML_BREADCRUMBS_FORMAT           = 'panth_structured_data/breadcrumbs/breadcrumb_format';
@@ -116,6 +117,11 @@ class Config
     public function getPriceValidUntilDefault(?int $storeId = null): string
     {
         return trim((string) ($this->value(self::XML_SD_PRICE_VALID_UNTIL_DEFAULT, $storeId) ?? ''));
+    }
+
+    public function getDefaultBrand(?int $storeId = null): string
+    {
+        return trim((string) ($this->value(self::XML_SD_DEFAULT_BRAND, $storeId) ?? ''));
     }
 
     public function getProductConditionSchemaUrl(?int $storeId = null): string
