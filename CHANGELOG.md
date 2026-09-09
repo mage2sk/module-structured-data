@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.1 - 2026-09-09
+
+- Fix: an unrecognised Return Fees value (any custom text such as `restocking` or `10% restocking fee`) mapped to `https://schema.org/FreeReturn` in the new inline Offer policy, advertising free returns on a store that charges them. It now maps to `https://schema.org/ReturnFeesCustomerResponsibility`, matching the behaviour of the pre-1.1.0 top-level node.
+- `ReturnPolicyProvider` now delegates its return-fee mapping to `Helper\Config::getReturnFeesSchemaUrl()` so the inline and top-level policies cannot drift apart again.
+- Fix: the return and shipping country codes are upper-cased, so a lower-case admin entry such as `de` emits `DE` instead of an invalid `addressCountry`.
+- Added unit coverage for the fee and return-method mappings, the country fallback chain, and the merchant fields surviving a missing product attribute.
+
 ## 1.1.0 - 2026-09-09
 
 - New: every product Offer carries an inline `hasMerchantReturnPolicy` (`MerchantReturnPolicy`) and `shippingDetails` (`OfferShippingDetails`), the three fields Search Console reports as missing on the Merchant listings report. Virtual and downloadable products get a `MerchantReturnNotPermitted` policy and a zero-rate, zero-day shipping entry instead.

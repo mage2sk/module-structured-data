@@ -194,6 +194,22 @@ class ProductProviderTest extends TestCase
         $this->assertArrayNotHasKey('shippingDetails', $node['offers']);
     }
 
+    public function testMerchantFieldsSurviveAMissingAttribute(): void
+    {
+        $provider = $this->buildProvider(
+            ['isMerchantFieldsEnabled' => true],
+            ['getAttributeText' => new \Error('Call to a member function getSource() on false')]
+        );
+
+        $node = $provider->getJsonLd();
+
+        $this->assertSame('Product', $node['@type']);
+        $this->assertSame('19.99', $node['offers']['price']);
+        $this->assertArrayHasKey('hasMerchantReturnPolicy', $node['offers']);
+        $this->assertArrayHasKey('shippingDetails', $node['offers']);
+        $this->assertArrayNotHasKey('audience', $node);
+    }
+
     private function buildProvider(array $configOverrides = [], array $productOverrides = []): ProductProvider
     {
         $storeMock = $this->createStub(Store::class);
@@ -244,8 +260,14 @@ class ProductProviderTest extends TestCase
             'getMediaGalleryImages' => null,
         ];
         $productMock = $this->createStub(Product::class);
-        $productMock->method('getAttributeText')->willReturn(null);
+        if (!isset($productOverrides['getAttributeText'])) {
+            $productMock->method('getAttributeText')->willReturn(null);
+        }
         foreach (array_merge($productDefaults, $productOverrides) as $method => $value) {
+            if ($value instanceof \Throwable) {
+                $productMock->method($method)->willThrowException($value);
+                continue;
+            }
             $productMock->method($method)->willReturn($value);
         }
 

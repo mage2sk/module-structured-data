@@ -215,23 +215,28 @@ class Config
 
     public function getStoreCountry(?int $storeId = null): string
     {
-        $country = trim((string) ($this->value(self::XML_STORE_COUNTRY, $storeId) ?? ''));
+        $country = $this->countryCode(self::XML_STORE_COUNTRY, $storeId);
 
         return $country !== '' ? $country : 'US';
     }
 
     public function getReturnApplicableCountry(?int $storeId = null): string
     {
-        $country = trim((string) ($this->value(self::XML_SD_RETURN_APPLICABLE_COUNTRY, $storeId) ?? ''));
+        $country = $this->countryCode(self::XML_SD_RETURN_APPLICABLE_COUNTRY, $storeId);
 
         return $country !== '' ? $country : $this->getStoreCountry($storeId);
     }
 
     public function getShippingCountry(?int $storeId = null): string
     {
-        $country = trim((string) ($this->value(self::XML_SD_SHIPPING_COUNTRY, $storeId) ?? ''));
+        $country = $this->countryCode(self::XML_SD_SHIPPING_COUNTRY, $storeId);
 
         return $country !== '' ? $country : $this->getStoreCountry($storeId);
+    }
+
+    private function countryCode(string $path, ?int $storeId): string
+    {
+        return strtoupper(trim((string) ($this->value($path, $storeId) ?? '')));
     }
 
     public function getReturnMethodSchemaUrl(?int $storeId = null): string
@@ -259,7 +264,7 @@ class Config
             'restockingfees' => 'https://schema.org/RestockingFees',
         ];
 
-        return $enum[$lower] ?? 'https://schema.org/FreeReturn';
+        return $enum[$lower] ?? 'https://schema.org/ReturnFeesCustomerResponsibility';
     }
 
     public function getShippingDefaultRate(?int $storeId = null): string

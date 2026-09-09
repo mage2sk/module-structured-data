@@ -14,7 +14,6 @@ class ReturnPolicyProvider extends AbstractProvider
 {
     private const XML_RETURN_DAYS = 'panth_structured_data/structured_data/return_policy_days';
     private const XML_RETURN_TYPE = 'panth_structured_data/structured_data/return_policy_type';
-    private const XML_RETURN_FEES = 'panth_structured_data/structured_data/return_policy_fees';
     private const XML_STORE_COUNTRY = 'general/country/default';
 
     public function __construct(
@@ -59,7 +58,7 @@ class ReturnPolicyProvider extends AbstractProvider
         }
 
         $country = $this->getStoreCountry($storeId);
-        $returnFees = $this->getReturnFees($storeId);
+        $returnFees = $this->config->getReturnFeesSchemaUrl($storeId);
 
         $node = [
             '@type'                => 'MerchantReturnPolicy',
@@ -108,30 +107,6 @@ class ReturnPolicyProvider extends AbstractProvider
         return $value;
     }
 
-    private function getReturnFees(?int $storeId): string
-    {
-        $value = (string) ($this->scopeConfig->getValue(
-            self::XML_RETURN_FEES,
-            ScopeInterface::SCOPE_STORE,
-            $storeId
-        ) ?? '');
-
-        $lower = strtolower(trim($value));
-        if ($lower === '' || $lower === 'free' || $lower === 'freereturn') {
-            return 'https://schema.org/FreeReturn';
-        }
-
-        $enum = [
-            'returnfeescustomerresponsibility' => 'https://schema.org/ReturnFeesCustomerResponsibility',
-            'returnshippingfees'               => 'https://schema.org/ReturnShippingFees',
-            'restockingfees'                   => 'https://schema.org/RestockingFees',
-        ];
-        if (isset($enum[$lower])) {
-            return $enum[$lower];
-        }
-
-        return 'https://schema.org/ReturnFeesCustomerResponsibility';
-    }
 
     private function getStoreCountry(?int $storeId): string
     {
