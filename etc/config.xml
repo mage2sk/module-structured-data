@@ -62,6 +62,18 @@
                   DeliveryMethodProvider) and when no shipping entries exist.
                 -->
                 <multiRegionShipping>1</multiRegionShipping>
+                <merchant_fields_enabled>1</merchant_fields_enabled>
+                <merchant_return_enabled>1</merchant_return_enabled>
+                <return_applicable_country></return_applicable_country>
+                <return_method>bymail</return_method>
+                <merchant_shipping_enabled>1</merchant_shipping_enabled>
+                <shipping_default_rate>0</shipping_default_rate>
+                <shipping_handling_min>0</shipping_handling_min>
+                <shipping_handling_max>1</shipping_handling_max>
+                <shipping_transit_min>1</shipping_transit_min>
+                <shipping_transit_max>5</shipping_transit_max>
+                <shipping_country></shipping_country>
+                <brand_use_store_name_fallback>1</brand_use_store_name_fallback>
             </structured_data>
             <social_profiles>
                 <facebook_url></facebook_url>

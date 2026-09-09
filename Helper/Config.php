@@ -11,6 +11,21 @@ class Config
     public const XML_GENERAL_ENABLED = 'panth_seo/general/enabled';
     public const XML_GENERAL_DEBUG   = 'panth_seo/general/debug';
 
+    public const XML_SD_MERCHANT_FIELDS_ENABLED   = 'panth_structured_data/structured_data/merchant_fields_enabled';
+    public const XML_SD_MERCHANT_RETURN_ENABLED   = 'panth_structured_data/structured_data/merchant_return_enabled';
+    public const XML_SD_RETURN_APPLICABLE_COUNTRY = 'panth_structured_data/structured_data/return_applicable_country';
+    public const XML_SD_RETURN_METHOD             = 'panth_structured_data/structured_data/return_method';
+    public const XML_SD_RETURN_FEES               = 'panth_structured_data/structured_data/return_policy_fees';
+    public const XML_SD_MERCHANT_SHIPPING_ENABLED = 'panth_structured_data/structured_data/merchant_shipping_enabled';
+    public const XML_SD_SHIPPING_DEFAULT_RATE     = 'panth_structured_data/structured_data/shipping_default_rate';
+    public const XML_SD_SHIPPING_HANDLING_MIN     = 'panth_structured_data/structured_data/shipping_handling_min';
+    public const XML_SD_SHIPPING_HANDLING_MAX     = 'panth_structured_data/structured_data/shipping_handling_max';
+    public const XML_SD_SHIPPING_TRANSIT_MIN      = 'panth_structured_data/structured_data/shipping_transit_min';
+    public const XML_SD_SHIPPING_TRANSIT_MAX      = 'panth_structured_data/structured_data/shipping_transit_max';
+    public const XML_SD_SHIPPING_COUNTRY          = 'panth_structured_data/structured_data/shipping_country';
+    public const XML_SD_BRAND_STORE_FALLBACK      = 'panth_structured_data/structured_data/brand_use_store_name_fallback';
+    public const XML_STORE_COUNTRY                = 'general/country/default';
+    public const XML_STORE_NAME                   = 'general/store_information/name';
     public const XML_SD_RETURN_POLICY_DAYS        = 'panth_structured_data/structured_data/return_policy_days';
     public const XML_SD_BRAND_ATTRIBUTE           = 'panth_structured_data/structured_data/brand_attribute';
     public const XML_SD_GTIN_ATTRIBUTE            = 'panth_structured_data/structured_data/gtin_attribute';
@@ -176,6 +191,113 @@ class Config
         }
         $host = (string) parse_url($url, PHP_URL_HOST);
         return $host !== '';
+    }
+
+    public function isMerchantFieldsEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_SD_MERCHANT_FIELDS_ENABLED, $storeId);
+    }
+
+    public function isMerchantReturnEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_SD_MERCHANT_RETURN_ENABLED, $storeId);
+    }
+
+    public function isMerchantShippingEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_SD_MERCHANT_SHIPPING_ENABLED, $storeId);
+    }
+
+    public function isBrandStoreNameFallbackEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_SD_BRAND_STORE_FALLBACK, $storeId);
+    }
+
+    public function getStoreCountry(?int $storeId = null): string
+    {
+        $country = trim((string) ($this->value(self::XML_STORE_COUNTRY, $storeId) ?? ''));
+
+        return $country !== '' ? $country : 'US';
+    }
+
+    public function getReturnApplicableCountry(?int $storeId = null): string
+    {
+        $country = trim((string) ($this->value(self::XML_SD_RETURN_APPLICABLE_COUNTRY, $storeId) ?? ''));
+
+        return $country !== '' ? $country : $this->getStoreCountry($storeId);
+    }
+
+    public function getShippingCountry(?int $storeId = null): string
+    {
+        $country = trim((string) ($this->value(self::XML_SD_SHIPPING_COUNTRY, $storeId) ?? ''));
+
+        return $country !== '' ? $country : $this->getStoreCountry($storeId);
+    }
+
+    public function getReturnMethodSchemaUrl(?int $storeId = null): string
+    {
+        $map = [
+            'bymail' => 'https://schema.org/ReturnByMail',
+            'instore' => 'https://schema.org/ReturnInStore',
+            'kiosk' => 'https://schema.org/ReturnAtKiosk',
+        ];
+        $value = strtolower(trim((string) ($this->value(self::XML_SD_RETURN_METHOD, $storeId) ?? 'bymail')));
+
+        return $map[$value] ?? 'https://schema.org/ReturnByMail';
+    }
+
+    public function getReturnFeesSchemaUrl(?int $storeId = null): string
+    {
+        $lower = strtolower(trim((string) ($this->value(self::XML_SD_RETURN_FEES, $storeId) ?? '')));
+        if ($lower === '' || $lower === 'free' || $lower === 'freereturn') {
+            return 'https://schema.org/FreeReturn';
+        }
+
+        $enum = [
+            'returnfeescustomerresponsibility' => 'https://schema.org/ReturnFeesCustomerResponsibility',
+            'returnshippingfees' => 'https://schema.org/ReturnShippingFees',
+            'restockingfees' => 'https://schema.org/RestockingFees',
+        ];
+
+        return $enum[$lower] ?? 'https://schema.org/FreeReturn';
+    }
+
+    public function getShippingDefaultRate(?int $storeId = null): string
+    {
+        $raw = $this->value(self::XML_SD_SHIPPING_DEFAULT_RATE, $storeId);
+
+        return number_format(max(0.0, (float) ($raw ?? 0)), 2, '.', '');
+    }
+
+    public function getShippingHandlingMin(?int $storeId = null): int
+    {
+        return max(0, (int) ($this->value(self::XML_SD_SHIPPING_HANDLING_MIN, $storeId) ?? 0));
+    }
+
+    public function getShippingHandlingMax(?int $storeId = null): int
+    {
+        return max(
+            $this->getShippingHandlingMin($storeId),
+            (int) ($this->value(self::XML_SD_SHIPPING_HANDLING_MAX, $storeId) ?? 1)
+        );
+    }
+
+    public function getShippingTransitMin(?int $storeId = null): int
+    {
+        return max(0, (int) ($this->value(self::XML_SD_SHIPPING_TRANSIT_MIN, $storeId) ?? 1));
+    }
+
+    public function getShippingTransitMax(?int $storeId = null): int
+    {
+        return max(
+            $this->getShippingTransitMin($storeId),
+            (int) ($this->value(self::XML_SD_SHIPPING_TRANSIT_MAX, $storeId) ?? 5)
+        );
+    }
+
+    public function getStoreName(?int $storeId = null): string
+    {
+        return trim((string) ($this->value(self::XML_STORE_NAME, $storeId) ?? ''));
     }
 
     private function flag(string $path, ?int $storeId): bool

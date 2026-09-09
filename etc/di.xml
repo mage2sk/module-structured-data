@@ -52,6 +52,7 @@
         <arguments>
             <argument name="scopeConfig" xsi:type="object">Magento\Framework\App\Config\ScopeConfigInterface</argument>
             <argument name="shippingDetailsBuilder" xsi:type="object">Panth\StructuredData\Model\StructuredData\Shipping\ShippingDetailsBuilder</argument>
+            <argument name="merchantFieldsBuilder" xsi:type="object">Panth\StructuredData\Model\StructuredData\Offer\OfferMerchantFieldsBuilder</argument>
         </arguments>
     </type>
 

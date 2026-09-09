@@ -276,6 +276,100 @@
                     <validate>validate-digits</validate>
                     <comment>Products with stock qty below this number emit LimitedAvailability instead of InStock in structured data. Default: 5.</comment>
                 </field>
+                <field id="merchant_fields_enabled" translate="label comment" type="select" sortOrder="330" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Merchant Listing Offer Fields</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Master switch. When enabled, every product Offer carries an inline <code>hasMerchantReturnPolicy</code> and <code>shippingDetails</code>, and the Brand always resolves to a typed object. Turn off to emit Offers without these merchant fields.]]></comment>
+                </field>
+                <field id="merchant_return_enabled" translate="label comment" type="select" sortOrder="331" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Emit Inline Return Policy</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Adds hasMerchantReturnPolicy (MerchantReturnPolicy) to each Offer.</comment>
+                    <depends>
+                        <field id="merchant_fields_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="return_applicable_country" translate="label comment" type="text" sortOrder="332" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Return Applicable Country (ISO 3166-1 alpha-2)</label>
+                    <comment>e.g. US, GB, DE. Leave blank to use the store country (general/country/default).</comment>
+                    <depends>
+                        <field id="merchant_fields_enabled">1</field>
+                        <field id="merchant_return_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="return_method" translate="label comment" type="select" sortOrder="333" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Return Method</label>
+                    <source_model>Panth\StructuredData\Model\Config\Source\ReturnMethod</source_model>
+                    <comment>How customers return items. Applied to the MerchantReturnPolicy returnMethod property.</comment>
+                    <depends>
+                        <field id="merchant_fields_enabled">1</field>
+                        <field id="merchant_return_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="merchant_shipping_enabled" translate="label comment" type="select" sortOrder="340" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Emit Inline Shipping Details</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Adds shippingDetails (OfferShippingDetails) to each Offer. When the Delivery Methods textarea above is filled, those per-line entries win and these defaults are ignored.</comment>
+                    <depends>
+                        <field id="merchant_fields_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="shipping_default_rate" translate="label comment" type="text" sortOrder="341" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default Shipping Rate</label>
+                    <comment>Flat shipping cost in store currency used when no Delivery Methods lines are set. Enter 0 for free shipping.</comment>
+                    <depends>
+                        <field id="merchant_fields_enabled">1</field>
+                        <field id="merchant_shipping_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="shipping_handling_min" translate="label comment" type="text" sortOrder="342" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Handling Time Min (days)</label>
+                    <validate>validate-digits</validate>
+                    <depends>
+                        <field id="merchant_fields_enabled">1</field>
+                        <field id="merchant_shipping_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="shipping_handling_max" translate="label comment" type="text" sortOrder="343" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Handling Time Max (days)</label>
+                    <validate>validate-digits</validate>
+                    <depends>
+                        <field id="merchant_fields_enabled">1</field>
+                        <field id="merchant_shipping_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="shipping_transit_min" translate="label comment" type="text" sortOrder="344" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Transit Time Min (days)</label>
+                    <validate>validate-digits</validate>
+                    <depends>
+                        <field id="merchant_fields_enabled">1</field>
+                        <field id="merchant_shipping_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="shipping_transit_max" translate="label comment" type="text" sortOrder="345" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Transit Time Max (days)</label>
+                    <validate>validate-digits</validate>
+                    <depends>
+                        <field id="merchant_fields_enabled">1</field>
+                        <field id="merchant_shipping_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="shipping_country" translate="label comment" type="text" sortOrder="346" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Shipping Destination Country (ISO 3166-1 alpha-2)</label>
+                    <comment>Leave blank to use the store country (general/country/default).</comment>
+                    <depends>
+                        <field id="merchant_fields_enabled">1</field>
+                        <field id="merchant_shipping_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="brand_use_store_name_fallback" translate="label comment" type="select" sortOrder="350" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Fall Back Brand to Store Name</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When a product has no brand attribute value and Default Brand Name is blank, use the store name (general/store_information/name) so the Brand object is never empty.</comment>
+                    <depends>
+                        <field id="merchant_fields_enabled">1</field>
+                    </depends>
+                </field>
             </group>
 
             <group id="breadcrumbs" translate="label" sortOrder="52" showInDefault="1" showInWebsite="1" showInStore="1">

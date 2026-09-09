@@ -15,6 +15,7 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\StructuredData\Helper\Config;
 use Panth\StructuredData\Model\StructuredData\Shipping\ShippingDetailsBuilder;
+use Panth\StructuredData\Model\StructuredData\Offer\OfferMerchantFieldsBuilder;
 
 class ProductProvider extends AbstractProvider
 {
@@ -31,7 +32,8 @@ class ProductProvider extends AbstractProvider
         private readonly ReviewFactory $reviewFactory,
         private readonly ?StockRegistryInterface $stockRegistry = null,
         private readonly ?ScopeConfigInterface $scopeConfig = null,
-        private readonly ?ShippingDetailsBuilder $shippingDetailsBuilder = null
+        private readonly ?ShippingDetailsBuilder $shippingDetailsBuilder = null,
+        private readonly ?OfferMerchantFieldsBuilder $merchantFieldsBuilder = null
     ) {
         parent::__construct($registry, $request, $storeManager, $config);
     }
@@ -98,6 +100,12 @@ class ProductProvider extends AbstractProvider
         }
         if ($brandName === '') {
             $brandName = $this->config->getDefaultBrand();
+        }
+        if ($brandName === ''
+            && $this->config->isMerchantFieldsEnabled()
+            && $this->config->isBrandStoreNameFallbackEnabled()
+        ) {
+            $brandName = $this->config->getStoreName();
         }
         if ($brandName !== '') {
             $node['brand'] = [
@@ -210,11 +218,7 @@ class ProductProvider extends AbstractProvider
                 $finalPrice = 0.0;
             }
         }
-        $finalPrice = (float) $finalPrice;
-
-        if (!$isVariantType && $finalPrice <= 0.0) {
-            return [];
-        }
+        $finalPrice = max(0.0, (float) $finalPrice);
 
         $offer = ['@type' => 'Offer'];
         if (!$isVariantType) {
@@ -231,15 +235,13 @@ class ProductProvider extends AbstractProvider
             $offer['priceValidUntil'] = $priceValidUntil;
         }
 
-        if ($this->config->getReturnPolicyDays() <= 0) {
-            $offer['hasMerchantReturnPolicy'] = [
-                '@type' => 'MerchantReturnPolicy',
-                'applicableCountry' => $this->getStoreCountry(),
-                'returnPolicyCategory' => 'https://schema.org/MerchantReturnFiniteReturnWindow',
-                'merchantReturnDays' => 30,
-                'returnMethod' => 'https://schema.org/ReturnByMail',
-                'returnFees' => 'https://schema.org/FreeReturn',
-            ];
+        if ($this->merchantFieldsBuilder !== null) {
+            $storeId = null;
+            try {
+                $storeId = (int) $this->storeManager->getStore()->getId();
+            } catch (\Throwable) {
+            }
+            $offer = $this->merchantFieldsBuilder->apply($offer, $product, $currency, $storeId);
         }
 
         if ($this->shippingDetailsBuilder !== null) {

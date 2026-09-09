@@ -147,7 +147,8 @@ Performance - SEO - Adobe Commerce Cloud
 
 ### Merchant and Pricing Extras
 
-- **MerchantReturnPolicy** with applicableCountry, merchantReturnDays, returnMethod, and returnFees mapped to the correct `ReturnFeesEnumeration` URL.
+- **MerchantReturnPolicy** inline in every Offer with applicableCountry, merchantReturnDays, returnMethod, and returnFees mapped to the correct `ReturnFeesEnumeration` URL. Virtual and downloadable products get `MerchantReturnNotPermitted`.
+- **OfferShippingDetails** inline in every Offer with a configurable rate, destination country, handling time, and transit time. Per-line Delivery Methods entries override the defaults.
 - **Sale Event** (opt-in) adds `priceSpecification` with `validFrom` and `validThrough` on products with an active special price.
 - **Delivery Methods** and **Payment Methods** added to Offer via admin text fields.
 - **Multi-region shipping auto-detect** reads Magento's table-rate and flat-rate config when no manual delivery methods are set.
@@ -156,7 +157,7 @@ Performance - SEO - Adobe Commerce Cloud
 
 ### Specialist Nodes (All Opt-in)
 
-- **Brand** node using a configurable product attribute (default `manufacturer`) with a fallback default brand name.
+- **Brand** node using a configurable product attribute (default `manufacturer`), falling back to a default brand name and then to the store name so the Brand is never empty.
 - **Certifications** from a textarea attribute in `Authority | Name | ID` format, emitted as `hasCertification`.
 - **Energy Efficiency Label (EU)** with grades A-G emitted as `hasEnergyConsumptionDetails`.
 - **Pros/Cons** from two textarea attributes emitted as `positiveNotes` and `negativeNotes` ItemLists.
@@ -302,6 +303,18 @@ Leave empty to fall back to core Magento Store Information.
 | Return Policy Type | Structured Data | Refund | Refund or exchange |
 | Return Fees | Structured Data | free | free or a custom description |
 | Limited Stock Threshold | Structured Data | 5 | Qty below this emits LimitedAvailability instead of InStock |
+| Enable Merchant Listing Offer Fields | Structured Data | Yes | Master switch for the inline hasMerchantReturnPolicy, shippingDetails, and typed Brand |
+| Emit Inline Return Policy | Structured Data | Yes | Adds hasMerchantReturnPolicy to each Offer |
+| Return Applicable Country | Structured Data | (empty) | ISO 3166-1 alpha-2 code - blank uses general/country/default |
+| Return Method | Structured Data | Return by mail | Return by mail, in store, or at kiosk |
+| Emit Inline Shipping Details | Structured Data | Yes | Adds shippingDetails to each Offer when Delivery Methods is empty |
+| Default Shipping Rate | Structured Data | 0 | Flat shipping cost in store currency, 0 for free shipping |
+| Handling Time Min (days) | Structured Data | 0 | handlingTime minValue |
+| Handling Time Max (days) | Structured Data | 1 | handlingTime maxValue |
+| Transit Time Min (days) | Structured Data | 1 | transitTime minValue |
+| Transit Time Max (days) | Structured Data | 5 | transitTime maxValue |
+| Shipping Destination Country | Structured Data | (empty) | ISO 3166-1 alpha-2 code - blank uses general/country/default |
+| Fall Back Brand to Store Name | Structured Data | Yes | Uses the store name when every other brand source is empty |
 
 ### Breadcrumbs
 

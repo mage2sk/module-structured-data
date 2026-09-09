@@ -38,6 +38,10 @@ class ReturnPolicyProvider extends AbstractProvider
             return false;
         }
 
+        if ($this->config->isMerchantFieldsEnabled()) {
+            return false;
+        }
+
         return $this->getReturnDays() > 0;
     }
 
