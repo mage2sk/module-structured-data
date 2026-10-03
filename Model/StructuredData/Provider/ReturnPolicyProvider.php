@@ -1,0 +1,129 @@
+<?php
+declare(strict_types=1);
+
+namespace Panth\StructuredData\Model\StructuredData\Provider;
+
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Registry;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Panth\StructuredData\Helper\Config;
+
+class ReturnPolicyProvider extends AbstractProvider
+{
+    private const XML_RETURN_DAYS = 'panth_structured_data/structured_data/return_policy_days';
+    private const XML_RETURN_TYPE = 'panth_structured_data/structured_data/return_policy_type';
+    private const XML_STORE_COUNTRY = 'general/country/default';
+
+    public function __construct(
+        Registry $registry,
+        RequestInterface $request,
+        StoreManagerInterface $storeManager,
+        Config $config,
+        private readonly ScopeConfigInterface $scopeConfig
+    ) {
+        parent::__construct($registry, $request, $storeManager, $config);
+    }
+
+    public function getCode(): string
+    {
+        return 'return_policy';
+    }
+
+    public function isApplicable(): bool
+    {
+        $product = $this->getCurrentProduct();
+        if ($product === null || $this->isSoftwareProduct($product)) {
+            return false;
+        }
+
+        if ($this->config->isMerchantFieldsEnabled()) {
+            return false;
+        }
+
+        return $this->getReturnDays() > 0;
+    }
+
+    public function getJsonLd(): array
+    {
+        $product = $this->getCurrentProduct();
+        $days = $this->getReturnDays();
+        if ($product === null || $days <= 0) {
+            return [];
+        }
+
+        try {
+            $storeId = (int) $this->storeManager->getStore()->getId();
+        } catch (\Throwable) {
+            $storeId = null;
+        }
+
+        $country = $this->getStoreCountry($storeId);
+        $returnFees = $this->config->getReturnFeesSchemaUrl($storeId);
+
+        $node = [
+            '@type'                => 'MerchantReturnPolicy',
+            'applicableCountry'    => $country,
+            'returnPolicyCategory' => 'https://schema.org/MerchantReturnFiniteReturnWindow',
+            'merchantReturnDays'   => $days,
+            'returnMethod'         => $this->config->getReturnMethodSchemaUrl($storeId),
+            'returnFees'           => $returnFees,
+        ];
+
+        $returnType = $this->getReturnType($storeId);
+        if ($returnType !== '') {
+            $node['additionalProperty'] = [
+                '@type' => 'PropertyValue',
+                'name'  => 'Return Type',
+                'value' => $returnType,
+            ];
+        }
+
+        return [
+            '@type'  => 'Product',
+            '@id'    => (string) $product->getProductUrl() . '#product',
+            'offers' => [
+                'hasMerchantReturnPolicy' => $node,
+            ],
+        ];
+    }
+
+    private function getReturnDays(): int
+    {
+        try {
+            $storeId = (int) $this->storeManager->getStore()->getId();
+        } catch (\Throwable) {
+            $storeId = null;
+        }
+
+        return (int) ($this->scopeConfig->getValue(
+            self::XML_RETURN_DAYS,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?? 0);
+    }
+
+    private function getReturnType(?int $storeId): string
+    {
+        $value = (string) ($this->scopeConfig->getValue(
+            self::XML_RETURN_TYPE,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?? '');
+
+        return $value;
+    }
+
+
+    private function getStoreCountry(?int $storeId): string
+    {
+        $country = (string) ($this->scopeConfig->getValue(
+            self::XML_STORE_COUNTRY,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?? '');
+
+        return $country !== '' ? $country : 'US';
+    }
+}

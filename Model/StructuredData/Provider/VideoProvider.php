@@ -1,0 +1,73 @@
+<?php
+declare(strict_types=1);
+
+namespace Panth\StructuredData\Model\StructuredData\Provider;
+
+class VideoProvider extends AbstractProvider
+{
+    public function getCode(): string
+    {
+        return 'video';
+    }
+
+    public function isApplicable(): bool
+    {
+        return $this->getCurrentProduct() !== null;
+    }
+
+    public function getJsonLd(): array
+    {
+        $product = $this->getCurrentProduct();
+        if ($product === null) {
+            return [];
+        }
+        $entries = $product->getMediaGalleryEntries() ?? [];
+        if ($entries === []) {
+            return [];
+        }
+        try {
+            $mediaBase = rtrim(
+                (string) $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA),
+                '/'
+            ) . '/';
+        } catch (\Throwable) {
+            $mediaBase = $this->getBaseUrl() . 'media/';
+        }
+        $productUrl = (string) $product->getProductUrl();
+        $nodes = [];
+        foreach ($entries as $entry) {
+            if (!method_exists($entry, 'getExtensionAttributes')) {
+                continue;
+            }
+            $ext = $entry->getExtensionAttributes();
+            if ($ext === null || !method_exists($ext, 'getVideoContent')) {
+                continue;
+            }
+            $video = $ext->getVideoContent();
+            if ($video === null) {
+                continue;
+            }
+            $url = (string) $video->getVideoUrl();
+            if ($url === '') {
+                continue;
+            }
+            $title = (string) ($video->getVideoTitle() ?: $entry->getLabel() ?: $product->getName());
+            $description = (string) ($video->getVideoDescription() ?: $title);
+            $file = (string) $entry->getFile();
+            $thumbnail = $file !== '' ? $mediaBase . 'catalog/product/' . ltrim($file, '/') : '';
+
+            $node = [
+                '@type' => 'VideoObject',
+                '@id' => $productUrl . '#video-' . (count($nodes) + 1),
+                'name' => $title,
+                'description' => $description,
+                'thumbnailUrl' => $thumbnail !== '' ? $thumbnail : $url,
+                'uploadDate' => gmdate('c', strtotime((string) $product->getCreatedAt()) ?: time()),
+                'contentUrl' => $url,
+                'embedUrl' => $url,
+            ];
+            $nodes[] = $node;
+        }
+        return $nodes;
+    }
+}

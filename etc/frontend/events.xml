@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="cms_page_render">
+        <observer name="panth_structured_data_register_cms_page"
+                  instance="Panth\StructuredData\Observer\RegisterCmsPage"/>
+    </event>
+</config>
