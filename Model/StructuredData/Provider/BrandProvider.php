@@ -1,0 +1,60 @@
+<?php
+declare(strict_types=1);
+
+namespace Panth\StructuredData\Model\StructuredData\Provider;
+
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Registry;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Panth\StructuredData\Helper\Config;
+
+class BrandProvider extends AbstractProvider
+{
+    private const XML_PATH_DEFAULT_BRAND = 'panth_structured_data/structured_data/default_brand';
+
+    public function __construct(
+        Registry $registry,
+        RequestInterface $request,
+        StoreManagerInterface $storeManager,
+        Config $config,
+        private readonly ScopeConfigInterface $scopeConfig
+    ) {
+        parent::__construct($registry, $request, $storeManager, $config);
+    }
+
+    public function getCode(): string
+    {
+        return 'brand';
+    }
+
+    public function getJsonLd(): array
+    {
+        $product = $this->getCurrentProduct();
+        if ($product === null) {
+            return [];
+        }
+
+        $brand = '';
+        $brandAttr = $this->config->getBrandAttribute() ?: 'manufacturer';
+        if ($product->hasData($brandAttr)) {
+            $text = $this->safeAttributeText($product, $brandAttr);
+            $brand = is_string($text) ? $text : '';
+        }
+        if ($brand === '') {
+            $brand = trim((string) $this->scopeConfig->getValue(
+                self::XML_PATH_DEFAULT_BRAND,
+                ScopeInterface::SCOPE_STORE
+            ));
+        }
+        if ($brand === '') {
+            return [];
+        }
+
+        return [
+            '@type' => 'Brand',
+            'name' => $brand,
+        ];
+    }
+}

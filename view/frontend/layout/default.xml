@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+  Panth_StructuredData: register the JSON-LD head block on the default layout
+  handle so every frontend page has the opportunity to emit structured data.
+  Hyva + Luma safe: no JS, no RequireJS, no x-magento-init.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="head.additional">
+            <block class="Panth\StructuredData\Block\Head\StructuredData"
+                   name="panth_structured_data.head"
+                   template="Panth_StructuredData::head/structured_data.phtml"
+                   cacheable="true">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Panth\StructuredData\ViewModel\StructuredData</argument>
+                </arguments>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

@@ -1,0 +1,377 @@
+<?php
+declare(strict_types=1);
+
+namespace Panth\StructuredData\Test\Unit\Model\StructuredData\Provider;
+
+use Magento\Catalog\Helper\Image as ImageHelper;
+use Magento\Catalog\Model\Product;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
+use Magento\Framework\Registry;
+use Magento\Review\Model\ReviewFactory;
+use Magento\Store\Model\Store;
+use Magento\Store\Model\StoreManagerInterface;
+use Panth\StructuredData\Helper\Config;
+use Panth\StructuredData\Model\StructuredData\Offer\OfferMerchantFieldsBuilder;
+use Panth\StructuredData\Model\StructuredData\Provider\ProductProvider;
+use PHPUnit\Framework\TestCase;
+
+class ProductProviderTest extends TestCase
+{
+    private ProductProvider $provider;
+
+    private $registryMock;
+
+    private $productMock;
+
+    protected function setUp(): void
+    {
+        $this->registryMock = $this->createStub(Registry::class);
+        $requestMock = $this->createStub(RequestInterface::class);
+
+        $storeMock = $this->createStub(Store::class);
+        $storeMock->method('getCurrentCurrencyCode')->willReturn('USD');
+        $storeMock->method('getId')->willReturn(1);
+        $storeMock->method('getBaseUrl')->willReturn('https://example.com/');
+        $storeManagerMock = $this->createStub(StoreManagerInterface::class);
+        $storeManagerMock->method('getStore')->willReturn($storeMock);
+
+        $configMock = $this->createStub(Config::class);
+        $configMock->method('getMpnAttribute')->willReturn('');
+        $configMock->method('getGtinAttribute')->willReturn('');
+        $configMock->method('getBrandAttribute')->willReturn('');
+        $configMock->method('getProductConditionSchemaUrl')->willReturn('https://schema.org/NewCondition');
+        $configMock->method('getReturnPolicyDays')->willReturn(30);
+        $configMock->method('getDeliveryMethods')->willReturn('flatrate');
+        $configMock->method('getPriceValidUntilDefault')->willReturn('');
+
+        $imageHelperMock = $this->createStub(ImageHelper::class);
+        $imageHelperMock->method('init')->willThrowException(new \RuntimeException('no image'));
+
+        $reviewFactoryMock = $this->createStub(ReviewFactory::class);
+        $reviewFactoryMock->method('create')->willThrowException(new \RuntimeException('no reviews'));
+
+        $this->productMock = $this->createStub(Product::class);
+        $this->registryMock->method('registry')->willReturnMap([
+            ['current_product', $this->productMock],
+        ]);
+
+        $this->provider = new ProductProvider(
+            $this->registryMock,
+            $requestMock,
+            $storeManagerMock,
+            $configMock,
+            $imageHelperMock,
+            $this->createStub(PriceCurrencyInterface::class),
+            $reviewFactoryMock,
+            null,
+            null
+        );
+    }
+
+    public function testProductNodeSurvivesMissingGenderAttribute(): void
+    {
+        $this->productMock->method('getAttributeText')->willThrowException(
+            new \Error('Call to a member function getSource() on false')
+        );
+        $this->productMock->method('getProductUrl')->willReturn('https://example.com/test-product.html');
+        $this->productMock->method('getName')->willReturn('Test Product');
+        $this->productMock->method('getSku')->willReturn('TEST-SKU');
+        $this->productMock->method('getTypeId')->willReturn('simple');
+        $this->productMock->method('getFinalPrice')->willReturn(19.99);
+        $this->productMock->method('getData')->willReturn(null);
+        $this->productMock->method('hasData')->willReturn(false);
+        $this->productMock->method('isAvailable')->willReturn(true);
+        $this->productMock->method('getMediaGalleryImages')->willReturn(null);
+
+        $node = $this->provider->getJsonLd();
+
+        $this->assertSame('Product', $node['@type']);
+        $this->assertSame('Test Product', $node['name']);
+        $this->assertSame('TEST-SKU', $node['sku']);
+        $this->assertArrayHasKey('offers', $node);
+        $this->assertSame('19.99', $node['offers']['price']);
+        $this->assertArrayNotHasKey('audience', $node);
+        $this->assertArrayNotHasKey('brand', $node);
+    }
+
+    public function testAudienceAndBrandPopulatedWhenAttributesExist(): void
+    {
+        $this->productMock->method('getAttributeText')->willReturnMap([
+            ['manufacturer', 'Acme Brand'],
+            ['gender', 'Unisex'],
+        ]);
+        $this->productMock->method('getProductUrl')->willReturn('https://example.com/test-product.html');
+        $this->productMock->method('getName')->willReturn('Test Product');
+        $this->productMock->method('getSku')->willReturn('TEST-SKU');
+        $this->productMock->method('getTypeId')->willReturn('simple');
+        $this->productMock->method('getFinalPrice')->willReturn(19.99);
+        $this->productMock->method('getData')->willReturn(null);
+        $this->productMock->method('hasData')->willReturn(false);
+        $this->productMock->method('isAvailable')->willReturn(true);
+        $this->productMock->method('getMediaGalleryImages')->willReturn(null);
+
+        $node = $this->provider->getJsonLd();
+
+        $this->assertSame(['@type' => 'Brand', 'name' => 'Acme Brand'], $node['brand']);
+        $this->assertSame(['@type' => 'PeopleAudience', 'audienceType' => 'Unisex'], $node['audience']);
+    }
+
+    public function testFreeVirtualProductStillEmitsAValidOffer(): void
+    {
+        $provider = $this->buildProvider(
+            ['isMerchantFieldsEnabled' => true],
+            ['getTypeId' => 'virtual', 'getFinalPrice' => 0.0]
+        );
+
+        $node = $provider->getJsonLd();
+
+        $this->assertArrayHasKey('offers', $node);
+        $this->assertSame('0.00', $node['offers']['price']);
+        $this->assertSame('USD', $node['offers']['priceCurrency']);
+        $this->assertArrayHasKey('availability', $node['offers']);
+        $this->assertSame(
+            'https://schema.org/MerchantReturnNotPermitted',
+            $node['offers']['hasMerchantReturnPolicy']['returnPolicyCategory']
+        );
+        $this->assertSame('OfferShippingDetails', $node['offers']['shippingDetails']['@type']);
+    }
+
+    public function testNegativeFinalPriceIsClampedToZero(): void
+    {
+        $provider = $this->buildProvider([], ['getFinalPrice' => -5.0]);
+
+        $node = $provider->getJsonLd();
+
+        $this->assertSame('0.00', $node['offers']['price']);
+    }
+
+    public function testBrandFallsBackToStoreName(): void
+    {
+        $provider = $this->buildProvider([
+            'isMerchantFieldsEnabled' => true,
+            'isBrandStoreNameFallbackEnabled' => true,
+            'getStoreName' => 'Acme Store',
+        ]);
+
+        $node = $provider->getJsonLd();
+
+        $this->assertSame(['@type' => 'Brand', 'name' => 'Acme Store'], $node['brand']);
+    }
+
+    public function testDefaultBrandWinsOverStoreName(): void
+    {
+        $provider = $this->buildProvider([
+            'isMerchantFieldsEnabled' => true,
+            'isBrandStoreNameFallbackEnabled' => true,
+            'getStoreName' => 'Acme Store',
+            'getDefaultBrand' => 'Preferred Brand',
+        ]);
+
+        $node = $provider->getJsonLd();
+
+        $this->assertSame(['@type' => 'Brand', 'name' => 'Preferred Brand'], $node['brand']);
+    }
+
+    public function testBrandOmittedWhenFallbackDisabled(): void
+    {
+        $provider = $this->buildProvider([
+            'isMerchantFieldsEnabled' => true,
+            'isBrandStoreNameFallbackEnabled' => false,
+            'getStoreName' => 'Acme Store',
+        ]);
+
+        $node = $provider->getJsonLd();
+
+        $this->assertArrayNotHasKey('brand', $node);
+    }
+
+    public function testMerchantFieldsAbsentWhenBuilderIsNotWired(): void
+    {
+        $node = $this->provider->getJsonLd();
+
+        $this->assertArrayNotHasKey('hasMerchantReturnPolicy', $node['offers']);
+        $this->assertArrayNotHasKey('shippingDetails', $node['offers']);
+    }
+
+    public function testMerchantFieldsSurviveAMissingAttribute(): void
+    {
+        $provider = $this->buildProvider(
+            ['isMerchantFieldsEnabled' => true],
+            ['getAttributeText' => new \Error('Call to a member function getSource() on false')]
+        );
+
+        $node = $provider->getJsonLd();
+
+        $this->assertSame('Product', $node['@type']);
+        $this->assertSame('19.99', $node['offers']['price']);
+        $this->assertArrayHasKey('hasMerchantReturnPolicy', $node['offers']);
+        $this->assertArrayHasKey('shippingDetails', $node['offers']);
+        $this->assertArrayNotHasKey('audience', $node);
+    }
+
+    public function testProductNodeHasNoPublicationDates(): void
+    {
+        $provider = $this->buildProvider([], ['getData' => $this->productData()]);
+
+        $node = $provider->getJsonLd();
+
+        $this->assertSame('Product', $node['@type']);
+        $this->assertArrayNotHasKey('datePublished', $node);
+        $this->assertArrayNotHasKey('dateModified', $node);
+    }
+
+    public function testSoftwareProductEmitsSoftwareApplication(): void
+    {
+        $provider = $this->buildProvider(
+            [
+                'isMerchantFieldsEnabled' => true,
+                'isBrandStoreNameFallbackEnabled' => true,
+                'getStoreName' => 'Acme Store',
+                'isSoftwareProduct' => true,
+            ],
+            [
+                'getTypeId' => 'virtual',
+                'getFinalPrice' => 0.0,
+                'getData' => $this->productData(['mpn' => 'MPN-1']),
+            ]
+        );
+
+        $node = $provider->getJsonLd();
+
+        $this->assertSame('SoftwareApplication', $node['@type']);
+        $this->assertSame('https://example.com/test-product.html#product', $node['@id']);
+        $this->assertSame('DeveloperApplication', $node['applicationCategory']);
+        $this->assertSame('Magento 2', $node['operatingSystem']);
+        $this->assertSame(['@type' => 'Organization', 'name' => 'Acme Store'], $node['publisher']);
+        $this->assertArrayNotHasKey('brand', $node);
+        $this->assertArrayNotHasKey('mpn', $node);
+        $this->assertArrayNotHasKey('sku', $node);
+        $this->assertSame('2026-01-02T03:04:05+00:00', $node['datePublished']);
+        $this->assertSame('2026-02-03T04:05:06+00:00', $node['dateModified']);
+        $this->assertSame(
+            ['@type', 'url', 'price', 'priceCurrency', 'availability'],
+            array_keys($node['offers'])
+        );
+        $this->assertSame('0.00', $node['offers']['price']);
+        $this->assertArrayNotHasKey('shippingDetails', $node['offers']);
+        $this->assertArrayNotHasKey('hasMerchantReturnPolicy', $node['offers']);
+    }
+
+    public function testSoftwareCategoryAndOperatingSystemComeFromAttributes(): void
+    {
+        $provider = $this->buildProvider(
+            ['isSoftwareProduct' => true],
+            ['getData' => $this->productData([
+                'panth_software_category' => 'BusinessApplication',
+                'panth_software_os' => 'Windows, macOS',
+                'panth_software_version' => '2.1.0',
+            ])]
+        );
+
+        $node = $provider->getJsonLd();
+
+        $this->assertSame('BusinessApplication', $node['applicationCategory']);
+        $this->assertSame('Windows, macOS', $node['operatingSystem']);
+        $this->assertSame('2.1.0', $node['softwareVersion']);
+    }
+
+    private function productData(array $values = []): \Closure
+    {
+        $values = array_merge([
+            'created_at' => '2026-01-02 03:04:05+00:00',
+            'updated_at' => '2026-02-03 04:05:06+00:00',
+        ], $values);
+
+        return static fn($key = '', $index = null) => $values[$key] ?? null;
+    }
+
+    private function buildProvider(array $configOverrides = [], array $productOverrides = []): ProductProvider
+    {
+        $storeMock = $this->createStub(Store::class);
+        $storeMock->method('getCurrentCurrencyCode')->willReturn('USD');
+        $storeMock->method('getId')->willReturn(1);
+        $storeMock->method('getBaseUrl')->willReturn('https://example.com/');
+        $storeManagerMock = $this->createStub(StoreManagerInterface::class);
+        $storeManagerMock->method('getStore')->willReturn($storeMock);
+
+        $configDefaults = [
+            'getMpnAttribute' => '',
+            'getGtinAttribute' => '',
+            'getBrandAttribute' => '',
+            'getDefaultBrand' => '',
+            'getProductConditionSchemaUrl' => 'https://schema.org/NewCondition',
+            'getReturnPolicyDays' => 30,
+            'getDeliveryMethods' => '',
+            'getPriceValidUntilDefault' => '',
+            'isMerchantFieldsEnabled' => false,
+            'isMerchantReturnEnabled' => true,
+            'isMerchantShippingEnabled' => true,
+            'isBrandStoreNameFallbackEnabled' => false,
+            'getStoreName' => '',
+            'getReturnApplicableCountry' => 'US',
+            'getShippingCountry' => 'US',
+            'getReturnMethodSchemaUrl' => 'https://schema.org/ReturnByMail',
+            'getReturnFeesSchemaUrl' => 'https://schema.org/FreeReturn',
+            'getShippingDefaultRate' => '0.00',
+            'getShippingHandlingMin' => 0,
+            'getShippingHandlingMax' => 1,
+            'getShippingTransitMin' => 1,
+            'getShippingTransitMax' => 5,
+        ];
+        $configMock = $this->createStub(Config::class);
+        foreach (array_merge($configDefaults, $configOverrides) as $method => $value) {
+            $configMock->method($method)->willReturn($value);
+        }
+
+        $productDefaults = [
+            'getProductUrl' => 'https://example.com/test-product.html',
+            'getName' => 'Test Product',
+            'getSku' => 'TEST-SKU',
+            'getTypeId' => 'simple',
+            'getFinalPrice' => 19.99,
+            'getData' => null,
+            'hasData' => false,
+            'isAvailable' => true,
+            'getMediaGalleryImages' => null,
+        ];
+        $productMock = $this->createStub(Product::class);
+        if (!isset($productOverrides['getAttributeText'])) {
+            $productMock->method('getAttributeText')->willReturn(null);
+        }
+        foreach (array_merge($productDefaults, $productOverrides) as $method => $value) {
+            if ($value instanceof \Throwable) {
+                $productMock->method($method)->willThrowException($value);
+                continue;
+            }
+            if ($value instanceof \Closure) {
+                $productMock->method($method)->willReturnCallback($value);
+                continue;
+            }
+            $productMock->method($method)->willReturn($value);
+        }
+
+        $registryMock = $this->createStub(Registry::class);
+        $registryMock->method('registry')->willReturnMap([['current_product', $productMock]]);
+
+        $imageHelperMock = $this->createStub(ImageHelper::class);
+        $imageHelperMock->method('init')->willThrowException(new \RuntimeException('no image'));
+
+        $reviewFactoryMock = $this->createStub(ReviewFactory::class);
+        $reviewFactoryMock->method('create')->willThrowException(new \RuntimeException('no reviews'));
+
+        return new ProductProvider(
+            $registryMock,
+            $this->createStub(RequestInterface::class),
+            $storeManagerMock,
+            $configMock,
+            $imageHelperMock,
+            $this->createStub(PriceCurrencyInterface::class),
+            $reviewFactoryMock,
+            null,
+            null,
+            null,
+            new OfferMerchantFieldsBuilder($configMock)
+        );
+    }
+}
